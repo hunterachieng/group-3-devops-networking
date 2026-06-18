@@ -7,6 +7,15 @@ If you get stuck at any step, the fix almost always belongs in this doc or in
 `install.sh` — note it down, because "a stranger can deploy from our docs" is
 part of the grade.
 
+To clone outside of the VM:
+
+```
+cd devops-lab 
+mkdir group-3-devops-networking
+cd group-3-devops-networking
+
+```
+
 ---
 
 ## The mental model (read this first)
