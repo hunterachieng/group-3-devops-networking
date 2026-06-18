@@ -11,8 +11,7 @@ To clone outside of the VM:
 
 ```
 cd devops-lab 
-mkdir group-3-devops-networking
-cd group-3-devops-networking
+git clone https://github.com/hunterachieng/group-3-devops-networking.git
 
 ```
 
