@@ -1,0 +1,11 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# macOS Finder junk
+.DS_Store
+
+# Logs
+*.log
