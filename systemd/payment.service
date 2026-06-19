@@ -1,0 +1,30 @@
+[Unit]
+Description=Payment service (e-commerce pipeline, port 3003)
+Documentation=https://github.com/hunterachieng/group-3-devops-networking
+# Payment is also a leaf service at startup. It DOES call Order at runtime
+# (the confirm callback), but it must NOT depend on Order to start - that
+# would create a cycle (Order depends on Payment). Payment handles Order
+# being temporarily unavailable gracefully in code instead.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=psenv
+Group=psenv
+WorkingDirectory=/opt/psenv
+
+Environment=BIND_HOST=127.0.0.1
+Environment=SERVICE_PORT=3003
+Environment=ORDER_URL=http://order.internal:3001
+
+ExecStart=/opt/psenv/.venv/bin/python /opt/psenv/services/payment/app.py
+
+Restart=on-failure
+RestartSec=2
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

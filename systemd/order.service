@@ -1,0 +1,40 @@
+[Unit]
+Description=Order service (public entrypoint, port 3001)
+Documentation=https://github.com/hunterachieng/group-3-devops-networking
+
+# ORDERING: start Order only after the network AND its two dependencies.
+After=network-online.target inventory.service payment.service
+
+# DEPENDENCY: pull Inventory and Payment in when Order starts, but use Wants=
+# (soft) rather than Requires= (hard). Why: if a dependency later dies, we want
+# Order to STAY UP and return a clean 502 (it handles this in code) and recover
+# automatically when the dependency returns - rather than Order being forcibly
+# killed too.
+Wants=network-online.target inventory.service payment.service
+
+[Service]
+Type=simple
+User=psenv
+Group=psenv
+WorkingDirectory=/opt/psenv
+
+Environment=BIND_HOST=127.0.0.1
+Environment=SERVICE_PORT=3001
+Environment=INVENTORY_URL=http://inventory.internal:3002
+
+# READINESS: After= only guarantees the dependency processes were launched,
+# not that they are listening yet. This gate blocks until both answer /health,
+# enforcing "Order does not become operational until its dependencies are available."
+ExecStartPre=/opt/psenv/scripts/wait-for-deps.sh
+
+ExecStart=/opt/psenv/.venv/bin/python /opt/psenv/services/order/app.py
+
+Restart=on-failure
+RestartSec=2
+
+# Prevent escalation of roles. Ensure /tmp is private to service
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

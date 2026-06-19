@@ -27,7 +27,7 @@ SERVICE_NAME = "payment-service"
 
 BIND_HOST = os.getenv("BIND_HOST", "127.0.0.1")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", "3003"))
-
+# Payment confirms back to Order, so it needs Order's address - by name.
 ORDER_URL = os.getenv("ORDER_URL", "http://order.internal:3001")
 DOWNSTREAM_TIMEOUT = float(os.getenv("DOWNSTREAM_TIMEOUT", "5"))
 
@@ -72,7 +72,7 @@ def charge():
     time.sleep(0.05)
 
     # Confirm back to Order. A failed confirm should NOT fail the charge -
-    # the money was taken - continue.
+    # the money was taken - so we log it and carry on.
     confirm_outcome = "sent"
     try:
         log_event(log, "confirming_order", "notifying Order that payment confirmed",

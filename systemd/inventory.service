@@ -1,0 +1,32 @@
+[Unit]
+Description=Inventory service (e-commerce pipeline, port 3002)
+Documentation=https://github.com/hunterachieng/group-3-devops-networking
+# Wait for the network stack before starting. Inventory has no app-level
+# dependencies of its own - it is a leaf service that Order/Inventory call.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=psenv
+Group=psenv
+WorkingDirectory=/opt/psenv
+
+# Configuration is passed in, never hardcoded in the app.
+Environment=BIND_HOST=127.0.0.1
+Environment=SERVICE_PORT=3002
+Environment=PAYMENT_URL=http://payment.internal:3003
+
+ExecStart=/opt/psenv/.venv/bin/python /opt/psenv/services/inventory/app.py
+
+# Restart automatically after a crash.
+Restart=on-failure
+RestartSec=2
+
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+# This is what makes `systemctl enable` start it on boot.
+WantedBy=multi-user.target
