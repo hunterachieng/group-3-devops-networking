@@ -23,7 +23,7 @@ ExecStart=/opt/psenv/.venv/bin/python /opt/psenv/services/inventory/app.py
 Restart=on-failure
 RestartSec=2
 
-
+# Light hardening - cheap wins worth mentioning in the demo.
 NoNewPrivileges=true
 PrivateTmp=true
 

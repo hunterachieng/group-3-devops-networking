@@ -9,7 +9,7 @@ After=network-online.target inventory.service payment.service
 # (soft) rather than Requires= (hard). Why: if a dependency later dies, we want
 # Order to STAY UP and return a clean 502 (it handles this in code) and recover
 # automatically when the dependency returns - rather than Order being forcibly
-# killed too.
+# killed too. This is the more resilient, production-style behaviour.
 Wants=network-online.target inventory.service payment.service
 
 [Service]
@@ -32,7 +32,6 @@ ExecStart=/opt/psenv/.venv/bin/python /opt/psenv/services/order/app.py
 Restart=on-failure
 RestartSec=2
 
-# Prevent escalation of roles. Ensure /tmp is private to service
 NoNewPrivileges=true
 PrivateTmp=true
 
