@@ -27,6 +27,13 @@ if [ "$(id -u)" = "0" ]; then
   exit 1
 fi
 
+# Must run inside a Linux/systemd environment (an Ubuntu VM), not the host OS.
+if [ "$(uname -s)" != "Linux" ] || ! command -v apt-get >/dev/null 2>&1 || ! command -v systemctl >/dev/null 2>&1; then
+  echo "This must run inside an Ubuntu VM (needs Linux + apt + systemd), not on your host." >&2
+  echo "macOS/Windows are for editing only. See docs/SETUP.md Step 1 to get a VM." >&2
+  exit 1
+fi
+
 # sanity: are we actually in the repo?
 for d in psenv systemd nginx scripts; do
   [ -d "$REPO_ROOT/$d" ] || { echo "Cannot find '$d' under $REPO_ROOT - run from the repo." >&2; exit 1; }
