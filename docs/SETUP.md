@@ -9,21 +9,6 @@ part of the grade.
 
 ---
 
-## What the system is
-
-A small e-commerce checkout pipeline made of three HTTP services:
-
-| Role      | Service identity   | Discovery name       | Port | Public? | Endpoint        |
-|-----------|--------------------|----------------------|------|---------|-----------------|
-| Order     | order-service      | order.internal       | 3001 | yes     | POST /checkout  |
-| Inventory | inventory-service  | inventory.internal   | 3002 | no      | POST /reserve   |
-| Payment   | payment-service    | payment.internal     | 3003 | no      | POST /charge    |
-
-Flow: `client -> Order -> Inventory -> Payment -> (confirm callback) -> Order`.
-Every service also has `GET /health`. Only Order is reachable from outside.
-
----
-
 ## The mental model (read this first)
 
 - **You EDIT on your own machine** (Mac/Windows/Linux), in your editor.
@@ -35,31 +20,37 @@ EDIT (your machine, VS Code)  --git push-->  GitHub  --git pull-->  RUN (Ubuntu 
 ```
 
 You will have the repo cloned in **two** places: once on your machine (to edit)
-and once on the VM (to run). That is intentional. Never edit the VM's copy by
-hand — it only ever receives `git pull`.
+and once on the VM (to run). That is intentional, not a mistake. Never edit the
+VM's copy by hand — it only ever receives `git pull`.
 
 ---
 
 ## Step 1 — Get an Ubuntu VM
 
-Depends on your laptop's OS. Use the **course's** setup guide for your platform
-(`setup-macos.md`, `setup-linux.md`, `setup-windows.md` in the lab repo).
+This part depends on your laptop's OS. Use the **course's** setup guide for your
+platform (in the `devops-up-100` lab repo): `setup-macos.md`, `setup-linux.md`,
+or `setup-windows.md`. That is the same process that created the team's VMs.
 
-- **macOS:** install Lima, `limactl start` the lab VM, enter with
-  `limactl shell <vm-name>` (`limactl list` shows the name).
-- **Linux:** easiest is Multipass — `multipass launch --name opslab` then
-  `multipass shell opslab`. Don't run this project on your daily laptop; it
-  creates system services and firewall rules.
-- **Windows:** WSL2 with Ubuntu, or the course's Windows guide.
+Quick summary of what each person does:
 
-You're ready once your prompt shows you're inside an Ubuntu VM (e.g.
-`...@linux-ops-lab` with a `$`, not `%`).
+- **macOS:** install Lima, then `limactl start` the lab VM definition.
+  Enter the VM with `limactl shell <vm-name>` (find the name via `limactl list`).
+  Your shell prompt changes to `hunter@linux-ops-lab` (or similar) when you're inside.
+- **Linux (native Ubuntu):** easiest is Multipass — `multipass launch --name opslab`
+  then `multipass shell opslab`. Do NOT run this project directly on your daily
+  laptop; it creates system services and firewall rules you don't want on your
+  main machine.
+- **Windows:** use WSL2 with Ubuntu, or the course's Windows guide.
+
+You're ready for Step 2 once your terminal prompt shows you're **inside** an
+Ubuntu VM (it will say something like `...@linux-ops-lab` and use `$`, not `%`).
 
 ---
 
-## Step 2 — Install base tooling (on the VM)
+## Step 2 — Install the base tooling (on the VM)
 
-Minimal Ubuntu images ship without the venv module and pip:
+Minimal Ubuntu images ship without the Python venv module and pip, so install
+them first:
 
 ```bash
 sudo apt update
@@ -75,10 +66,11 @@ git clone https://github.com/hunterachieng/group-3-devops-networking.git ~/group
 cd ~/group-3-devops-networking/psenv
 ```
 
-(HTTPS clones a public repo with no credentials. You only need GitHub auth to
-`git push`, which you do from your own machine, not the VM.)
+(HTTPS works for read/clone with no setup because the repo is public. You only
+need GitHub credentials if you want to `git push` from the VM, which you usually
+won't — push from your own machine instead.)
 
-Sanity check — you should see exactly these files:
+Sanity check — you should see exactly six files:
 
 ```bash
 find . -type f -not -path '*/.venv/*'
@@ -90,9 +82,9 @@ Expected:
 ./requirements.txt
 ./services/common/__init__.py
 ./services/common/logging_setup.py
-./services/order/app.py
-./services/inventory/app.py
-./services/payment/app.py
+./services/service_a/app.py
+./services/service_b/app.py
+./services/service_c/app.py
 ```
 
 ---
@@ -101,7 +93,7 @@ Expected:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate          # prompt should now show (.venv)
+source .venv/bin/activate          # your prompt should now show (.venv)
 pip install -r requirements.txt
 ```
 
@@ -109,38 +101,57 @@ pip install -r requirements.txt
 
 ## Step 5 — Add the service-discovery names (on the VM)
 
-Services talk by name, not IP. On a single VM these all resolve to loopback:
+The services talk to each other by name, not IP. On a single VM these names all
+resolve to loopback:
 
 ```bash
-echo '127.0.0.1 order.internal
-127.0.0.1 inventory.internal
-127.0.0.1 payment.internal' | sudo tee -a /etc/hosts
+echo '127.0.0.1 service-a.internal
+127.0.0.1 service-b.internal
+127.0.0.1 service-c.internal' | sudo tee -a /etc/hosts
+```
 
-getent hosts inventory.internal      # should print: 127.0.0.1  inventory.internal
+Verify:
+
+```bash
+getent hosts service-b.internal      # should print: 127.0.0.1  service-b.internal
 ```
 
 ---
 
-## Step 6 — Run and verify (on the VM)
+## Step 6 — Run the services and verify (on the VM)
 
-Started by hand for now; systemd will manage them properly later. (These
-background jobs die when you close the terminal — that's expected.)
+For now we start them by hand to confirm everything works. (Later, systemd will
+manage them properly — these manual background jobs die when you close the
+terminal, which is expected.)
 
 ```bash
-SERVICE_PORT=3003 python services/payment/app.py &
-SERVICE_PORT=3002 python services/inventory/app.py &
-SERVICE_PORT=3001 python services/order/app.py &
+SERVICE_PORT=3003 python services/service_c/app.py &
+SERVICE_PORT=3002 python services/service_b/app.py &
+SERVICE_PORT=3001 python services/service_a/app.py &
 sleep 2
 
+# health
 curl -s http://127.0.0.1:3001/health
-curl -s -X POST http://127.0.0.1:3001/checkout -H 'Content-Type: application/json' -d '{"items":["BOOK-42"],"amount":3500}'
+
+# full flow: client -> A -> B -> C -> callback to A
+curl -s -X POST http://127.0.0.1:3001/process
 ```
 
-Success returns nested JSON with an `order_id` and `"outcome": "success"`.
-Stop the manual services with:
+A successful run returns nested JSON containing a `request_id`, e.g.:
+
+```json
+{
+  "service": "service-a",
+  "request_id": "….",
+  "outcome": "success",
+  "downstream": { "service": "service-b", "downstream": { "service": "service-c", "callback": "sent" } }
+}
+```
+
+If you see that, your environment is correct. Stop the manual services with:
 
 ```bash
-pkill -f 'services/'
+pkill -f 'services/service_'
 ```
 
 ---
@@ -148,22 +159,23 @@ pkill -f 'services/'
 ## The daily workflow (everyone)
 
 1. Edit on your own machine (VS Code), on your machine's clone.
-2. `git pull` first, make your change.
+2. `git pull` first (get teammates' changes), make your change.
 3. `git add . && git commit -m "..."` then `git push`.
 4. On the VM: `cd ~/group-3-devops-networking && git pull`.
 5. Redeploy / restart and test.
 
-**The VM never gets hand-edited.** If it runs on the VM but isn't in git, it
-doesn't exist as far as the team is concerned.
+Rule of thumb: **the VM never gets hand-edited.** If something runs on the VM
+that isn't in git, it doesn't exist as far as the team is concerned.
 
 ---
 
 ## Troubleshooting setup
 
-- `python3 -m venv` says *ensurepip is not available* → skipped Step 2;
+- `python3 -m venv` says *ensurepip is not available* → you skipped Step 2;
   run `sudo apt install -y python3-venv`.
-- `ModuleNotFoundError: common` → wrong directory; you must be in `psenv/`.
-- `curl` connection refused → a service didn't start; run the three in separate
-  terminals (not backgrounded) to see startup logs.
-- Port already in use → `sudo ss -ltnp | grep -E ':(3001|3002|3003)'`.
-- `getent hosts inventory.internal` returns nothing → skipped Step 5.
+- `ModuleNotFoundError: common` → you're running from the wrong directory; you
+  must be in `psenv/` so that `services/common` is importable.
+- `curl` connection refused → a service didn't start. Run the three commands in
+  separate terminals (not backgrounded) to see each service's startup logs.
+- Port already in use → check what's there: `sudo ss -ltnp | grep -E ':(3001|3002|3003)'`.
+- `getent hosts service-b.internal` returns nothing → you skipped Step 5.

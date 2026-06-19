@@ -1,189 +1,83 @@
-# Team setup guide
+# Repo update — read before you pull
 
-How to get a working copy of this system running on your own Ubuntu VM.
-Everyone on the team follows this once. It should take ~10 minutes.
+The repo changed in two big ways since some of you first cloned:
 
-If you get stuck at any step, the fix almost always belongs in this doc or in
-`install.sh` — note it down, because "a stranger can deploy from our docs" is
-part of the grade.
+1. The repo history was **reset early on** to remove the course/lab files. If you
+   cloned before that, a normal `git pull` will fail or tangle — re-clone instead.
+2. The three services were **renamed** to `order`, `inventory`, `payment`
+   (previously `service_a/b/c`), and the public endpoint on Order is now
+   `POST /checkout`.
 
-To clone outside of the VM:
+---
 
-```
-cd devops-lab 
+## Easiest path — re-clone (recommended for everyone)
+
+```bash
+cd ~                       # move out of the old folder first
+rm -rf group-3-devops-networking
 git clone https://github.com/hunterachieng/group-3-devops-networking.git
-
 ```
+
+Then follow `docs/SETUP.md` from Step 4 (venv) onward.
 
 ---
 
-## The mental model (read this first)
+## If you'd rather keep your existing clone
 
-- **You EDIT on your own machine** (Mac/Windows/Linux), in your editor.
-- **The system RUNS on an Ubuntu VM.**
-- **git connects the two.** You push from your machine; you pull on the VM.
+Only do this if you cloned **recently** (after the history reset) and have no
+local work you care about:
 
+```bash
+cd group-3-devops-networking
+git fetch origin
+git reset --hard origin/main      # WARNING: discards local uncommitted changes
+git pull
 ```
-EDIT (your machine, VS Code)  --git push-->  GitHub  --git pull-->  RUN (Ubuntu VM)
-```
 
-You will have the repo cloned in **two** places: once on your machine (to edit)
-and once on the VM (to run). That is intentional, not a mistake. Never edit the
-VM's copy by hand — it only ever receives `git pull`.
+`git reset --hard origin/main` forces your clone to exactly match GitHub. It is
+safe only because none of us have started personal changes yet — it throws away
+uncommitted work.
 
 ---
 
-## Step 1 — Get an Ubuntu VM
+## Two things EVERYONE must redo on their VM
 
-This part depends on your laptop's OS. Use the **course's** setup guide for your
-platform (in the `devops-up-100` lab repo): `setup-macos.md`, `setup-linux.md`,
-or `setup-windows.md`. That is the same process that created the team's VMs.
+These live on the VM, not in git, so pulling code does not update them.
 
-Quick summary of what each person does:
-
-- **macOS:** install Lima, then `limactl start` the lab VM definition.
-  Enter the VM with `limactl shell <vm-name>` (find the name via `limactl list`).
-  Your shell prompt changes to `hunter@linux-ops-lab` (or similar) when you're inside.
-- **Linux (native Ubuntu):** easiest is Multipass — `multipass launch --name opslab`
-  then `multipass shell opslab`. Do NOT run this project directly on your daily
-  laptop; it creates system services and firewall rules you don't want on your
-  main machine.
-- **Windows:** use WSL2 with Ubuntu, or the course's Windows guide.
-
-You're ready for Step 2 once your terminal prompt shows you're **inside** an
-Ubuntu VM (it will say something like `...@linux-ops-lab` and use `$`, not `%`).
-
----
-
-## Step 2 — Install the base tooling (on the VM)
-
-Minimal Ubuntu images ship without the Python venv module and pip, so install
-them first:
+### 1. Update the discovery names in /etc/hosts
 
 ```bash
-sudo apt update
-sudo apt install -y git python3-venv python3-pip
+sudo sed -i '/service-[abc]\.internal/d' /etc/hosts      # remove old names
+echo '127.0.0.1 order.internal
+127.0.0.1 inventory.internal
+127.0.0.1 payment.internal' | sudo tee -a /etc/hosts
 ```
 
----
+### 2. Restart the services
 
-## Step 3 — Clone the repo (on the VM)
+A running process keeps the OLD code until you restart it — new files on disk
+change nothing until the process is relaunched.
 
 ```bash
-git clone https://github.com/hunterachieng/group-3-devops-networking.git ~/group-3-devops-networking
-cd ~/group-3-devops-networking/psenv
-```
-
-(HTTPS works for read/clone with no setup because the repo is public. You only
-need GitHub credentials if you want to `git push` from the VM, which you usually
-won't — push from your own machine instead.)
-
-Sanity check — you should see exactly six files:
-
-```bash
-find . -type f -not -path '*/.venv/*'
-```
-
-Expected:
-
-```
-./requirements.txt
-./services/common/__init__.py
-./services/common/logging_setup.py
-./services/service_a/app.py
-./services/service_b/app.py
-./services/service_c/app.py
-```
-
----
-
-## Step 4 — Create the Python environment (on the VM)
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate          # your prompt should now show (.venv)
-pip install -r requirements.txt
-```
-
----
-
-## Step 5 — Add the service-discovery names (on the VM)
-
-The services talk to each other by name, not IP. On a single VM these names all
-resolve to loopback:
-
-```bash
-echo '127.0.0.1 service-a.internal
-127.0.0.1 service-b.internal
-127.0.0.1 service-c.internal' | sudo tee -a /etc/hosts
-```
-
-Verify:
-
-```bash
-getent hosts service-b.internal      # should print: 127.0.0.1  service-b.internal
-```
-
----
-
-## Step 6 — Run the services and verify (on the VM)
-
-For now we start them by hand to confirm everything works. (Later, systemd will
-manage them properly — these manual background jobs die when you close the
-terminal, which is expected.)
-
-```bash
-SERVICE_PORT=3003 python services/service_c/app.py &
-SERVICE_PORT=3002 python services/service_b/app.py &
-SERVICE_PORT=3001 python services/service_a/app.py &
+pkill -f 'services/'
+cd ~/group-3-devops-networking/psenv && source .venv/bin/activate
+SERVICE_PORT=3003 python services/payment/app.py &
+SERVICE_PORT=3002 python services/inventory/app.py &
+SERVICE_PORT=3001 python services/order/app.py &
 sleep 2
-
-# health
-curl -s http://127.0.0.1:3001/health
-
-# full flow: client -> A -> B -> C -> callback to A
-curl -s -X POST http://127.0.0.1:3001/process
+curl -s -X POST http://127.0.0.1:3001/checkout \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["BOOK-42"],"amount":3500}'
 ```
 
-A successful run returns nested JSON containing a `request_id`, e.g.:
-
-```json
-{
-  "service": "service-a",
-  "request_id": "….",
-  "outcome": "success",
-  "downstream": { "service": "service-b", "downstream": { "service": "service-c", "callback": "sent" } }
-}
-```
-
-If you see that, your environment is correct. Stop the manual services with:
-
-```bash
-pkill -f 'services/service_'
-```
+Success looks like `"service": "order-service"` and `"outcome": "success"` with
+an `order_id`.
 
 ---
 
-## The daily workflow (everyone)
+## Note
 
-1. Edit on your own machine (VS Code), on your machine's clone.
-2. `git pull` first (get teammates' changes), make your change.
-3. `git add . && git commit -m "..."` then `git push`.
-4. On the VM: `cd ~/group-3-devops-networking && git pull`.
-5. Redeploy / restart and test.
-
-Rule of thumb: **the VM never gets hand-edited.** If something runs on the VM
-that isn't in git, it doesn't exist as far as the team is concerned.
-
----
-
-## Troubleshooting setup
-
-- `python3 -m venv` says *ensurepip is not available* → you skipped Step 2;
-  run `sudo apt install -y python3-venv`.
-- `ModuleNotFoundError: common` → you're running from the wrong directory; you
-  must be in `psenv/` so that `services/common` is importable.
-- `curl` connection refused → a service didn't start. Run the three commands in
-  separate terminals (not backgrounded) to see each service's startup logs.
-- Port already in use → check what's there: `sudo ss -ltnp | grep -E ':(3001|3002|3003)'`.
-- `getent hosts service-b.internal` returns nothing → you skipped Step 5.
+Don't bother perfecting the manual run — systemd is replacing it shortly. You
+just need it working **once** to confirm your setup is sound. After that,
+starting the services becomes `sudo systemctl start order inventory payment`
+for everyone, identically.
