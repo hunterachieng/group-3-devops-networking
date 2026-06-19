@@ -85,7 +85,21 @@ docs/                      detailed runbooks (see Documentation index below)
 ## Installation
 
 Prerequisites: an Ubuntu VM. First-time/teammate environment setup is in
-`docs/SETUP.md`. Full end-to-end deploy on the VM:
+`docs/SETUP.md`.
+
+**One command (recommended):**
+
+```bash
+git clone https://github.com/hunterachieng/group-3-devops-networking.git ~/group-3-devops-networking
+cd ~/group-3-devops-networking
+bash scripts/install.sh         # idempotent; re-run to redeploy new code
+```
+
+`install.sh` performs every step below, is safe to re-run, and ends by running
+the verification. Skip the firewall with `SKIP_FIREWALL=1 bash scripts/install.sh`.
+
+<details>
+<summary><strong>What install.sh does (the manual equivalent)</strong></summary>
 
 ```bash
 # 1. base tooling
@@ -127,6 +141,8 @@ bash scripts/verify.sh
 
 Detailed, explained versions of each block: `docs/SYSTEMD.md`, `docs/NGINX.md`,
 `docs/NETWORK-SECURITY.md`.
+
+</details>
 
 ---
 
