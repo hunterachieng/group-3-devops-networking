@@ -342,8 +342,4 @@ both runtimes: `docs/RUNBOOK.md`.
 - `docs/SYSTEMD.md` — service lifecycle, dependencies, failure demos
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
-- `docs/CONTAINER_VALIDATION.md` — Docker Compose validation evidence (required deliverable)
 - `docs/PROOF.md` — production-readiness evidence (readiness, recovery, tracing)
-- `docs/TEAM-UPDATE.md` — how teammates sync after repo changes
-- `docs/HANDOFF-containerization.md` — context for the containerization work
-- `docs/HANDOFF-readiness-context.md` — context for the readiness work
