@@ -1,121 +1,225 @@
-# Container validation
+# Container Validation Tests
 
-Evidence that the containerized system preserves the production behavior.
-Run each block on a machine with Docker, and paste the actual output (or a
-screenshot) under each "Result" heading.
-
-Service-name mapping: **Service A = order, Service B = inventory,
-Service C = payment.** Public route is `POST /checkout` (and `GET /health`),
-published on host port **8080**.
+Run these tests after `docker compose up --build -d` to confirm the stack is healthy.
+For Docker install and setup instructions, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
 
 ---
 
-## 1. Start the system
+## Prerequisites
 
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
+docker compose ps          # all four containers should show "healthy"
 ```
 
-Result (expected): images build, then `Created`/`Started` for order, inventory,
-payment, nginx.
-
 ---
 
-## 2. Confirm containers are running
+## Test 1 — All containers running and healthy
 
 ```bash
-docker compose ps or docker ps
+docker compose ps
 ```
 
-Result (expected): four services listed, all `running`; order/inventory/payment
-show `(healthy)`. Only `nginx` shows a published port (`0.0.0.0:8080->80/tcp`).
+Expected: `order`, `inventory`, `payment`, `nginx` all show status `Up` with `(healthy)`.
 
----
-
-## 3. Public entry point works
+## Test 2 — Public health endpoint through nginx
 
 ```bash
-curl -i http://localhost:8080/health
-curl -i -X POST http://localhost:8080/checkout \
-  -H 'Content-Type: application/json' -d '{"items":["BOOK-42"],"amount":3500}'
+curl -s http://localhost:8080/health | python3 -m json.tool
 ```
 
-Result (expected): `HTTP/1.1 200 OK`; `/checkout` returns nested JSON with
-`"outcome": "success"` and an `order_id`.
+Expected: `{"status": "ok", "service": "order-service"}`.
 
----
-
-## 4. Service B and C are NOT directly exposed
+## Test 3 — Full checkout flow (end-to-end)
 
 ```bash
-curl -i --connect-timeout 3 http://localhost:3002/health
-curl -i --connect-timeout 3 http://localhost:3003/health
+curl -s -X POST http://localhost:8080/checkout \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-1","SKU-2"],"amount":4200}' | python3 -m json.tool
 ```
 
-Result (expected): `Connection refused` (or timeout) for both. Neither service
-publishes a host port, so the host cannot reach them.
+Expected: nested JSON with `"outcome": "success"` at every level and a `confirm` field showing `"sent"`.
 
----
-
-## 5. Internal service discovery works (inside the Compose network)
+## Test 4 — Internal services unreachable from host
 
 ```bash
-docker compose exec order     curl -fsS http://inventory:3002/health
-docker compose exec inventory curl -fsS http://payment:3003/health
+curl -s --connect-timeout 2 http://localhost:3001/health && echo "FAIL: order exposed" || echo "PASS: order not exposed"
+curl -s --connect-timeout 2 http://localhost:3002/health && echo "FAIL: inventory exposed" || echo "PASS: inventory not exposed"
+curl -s --connect-timeout 2 http://localhost:3003/health && echo "FAIL: payment exposed" || echo "PASS: payment not exposed"
 ```
 
-Result (expected): each returns `{"service":"...","status":"ok"}` with HTTP 200,
-proving containers resolve each other by Compose service name.
+Expected: all three print `PASS`.
 
----
-
-## 6. Trace one request through the system
+## Test 5 — Internal DNS resolution (container-to-container)
 
 ```bash
-curl -i -X POST http://localhost:8080/checkout \
-  -H 'X-Request-ID: demo-container-001' \
-  -H 'Content-Type: application/json' -d '{"items":["BOOK-42"],"amount":3500}'
-
-docker compose logs | grep demo-container-001
+docker compose exec order sh -c "python -c \"import urllib.request; print(urllib.request.urlopen('http://inventory:3002/health').read().decode())\""
 ```
 
-Result (expected): `demo-container-001` appears in order, inventory, payment, and
-nginx logs. (Verified against the real config: the id flows through
-checkout_received -> reserving_inventory -> stock_reserved -> charging_payment ->
-payment_captured -> confirming_order -> order_confirmed -> checkout_completed.)
+Expected: `{"status": "ok", "service": "inventory-service"}`.
 
----
-
-## 7. Stop Service B: clean failure, then recovery
+## Test 6 — Trace header propagation (X-Request-ID)
 
 ```bash
+RID="test-trace-$(date +%s)"
+curl -s -X POST http://localhost:8080/checkout \
+  -H "X-Request-ID: $RID" \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-A"],"amount":100}'
+
+sleep 1
+docker compose logs --no-log-prefix 2>/dev/null | grep "$RID"
+```
+
+Expected: the same `$RID` appears in log lines from nginx, order-service, inventory-service, and payment-service.
+
+## Test 7 — Readiness endpoint (liveness vs readiness distinction)
+
+### 7a — All healthy, readiness passes
+
+```bash
+curl -s http://localhost:8080/ready | python3 -m json.tool
+```
+
+Expected: `200` with `"status": "ready"` and `"dependencies": {"inventory": true}`.
+
+### 7b — Kill Payment, both Inventory and Order report not-ready (transitive)
+
+```bash
+docker compose stop payment
+sleep 3
+
+# Inventory readiness fails (can't reach Payment):
+docker compose exec inventory sh -c "curl -s http://localhost:3002/ready" | python3 -m json.tool
+# Expected: 503, {"status": "not_ready", "dependencies": {"payment": false}}
+
+# Order readiness also fails (Order checks Inventory's /ready, which is 503):
+curl -s http://localhost:8080/ready | python3 -m json.tool
+# Expected: 503, {"status": "not_ready", "dependencies": {"inventory": false}}
+
+# But liveness is fine for both — the processes are alive:
+docker compose exec inventory sh -c "curl -s http://localhost:3002/health" | python3 -m json.tool
+# Expected: 200, {"status": "ok"}
+
+curl -s http://localhost:8080/health | python3 -m json.tool
+# Expected: 200, {"status": "ok"}
+```
+
+### 7c — Kill Inventory, Order reports not-ready
+
+```bash
+docker compose start payment
+sleep 3
 docker compose stop inventory
+sleep 3
 
-curl -i -X POST http://localhost:8080/checkout \
-  -H 'X-Request-ID: fail-service-b-001' -d '{}'
-docker compose logs order | grep fail-service-b-001
+curl -s http://localhost:8080/ready | python3 -m json.tool
+# Expected: 503, {"status": "not_ready", "dependencies": {"inventory": false}}
+
+curl -s http://localhost:8080/health | python3 -m json.tool
+# Expected: 200, {"status": "ok"} — still alive
 ```
 
-Result (expected): the request returns **HTTP 502** with
-`"outcome": "failure"` and an error naming the unavailable downstream; order
-stays up and logs a `downstream_error` event. (Order uses a soft dependency, so
-it degrades gracefully instead of crashing.)
-
-Recover:
+### 7d — Restart, readiness recovers automatically
 
 ```bash
 docker compose start inventory
-sleep 3
-curl -i -X POST http://localhost:8080/checkout -d '{}'
+sleep 5
+
+curl -s http://localhost:8080/ready | python3 -m json.tool
+# Expected: 200, {"status": "ready", "dependencies": {"inventory": true}}
 ```
 
-Result (expected): `HTTP/1.1 200 OK` again, with no restart of order needed.
-
----
-
-## Shut down
+### 7e — Payment readiness (always ready, no hard dependencies)
 
 ```bash
-docker compose down           
-docker compose down -v 
+docker compose exec payment sh -c "curl -s http://localhost:3003/ready" | python3 -m json.tool
+# Expected: 200, {"status": "ready", "dependencies": {}}
+```
+
+Key takeaway: `/health` = "am I alive?" (200 if the process runs), `/ready` = "can I serve real traffic?" (503 when a downstream is down).
+
+## Test 8 — Callback coupling (no deadlock, best-effort confirm)
+
+### 8a — Callback completes (full round-trip)
+
+```bash
+curl -s -X POST http://localhost:8080/checkout \
+  -H "X-Request-ID: callback-test-1" \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-1"],"amount":100}' | python3 -m json.tool
+```
+
+Expected: `"confirm": "sent"` in the nested response — proves Payment called Order `/confirm` successfully.
+
+### 8b — No deadlock under concurrent load
+
+```bash
+for i in $(seq 1 20); do
+  curl -s -X POST http://localhost:8080/checkout \
+    -d '{"items":["SKU-'$i'"],"amount":100}' &
+done
+wait
+echo "All 20 completed without deadlock"
+```
+
+Expected: all 20 complete — no request hangs forever. With Gunicorn
+`--workers 2 --threads 4` (8 concurrent slots per service), some requests
+may return 502 under this burst because the worker pool is saturated and
+the 5-second `DOWNSTREAM_TIMEOUT` expires. This is normal capacity
+limiting, not a deadlock. The key evidence is that every request finishes
+(success or 502) rather than hanging indefinitely, which would happen
+with a single-threaded server where the callback blocks the only thread.
+
+### 8c — Callback is best-effort (Order down during callback)
+
+```bash
+docker compose stop order
+sleep 2
+
+# Call Payment directly — charge succeeds even though callback fails:
+docker compose exec inventory sh -c \
+  "curl -s -X POST http://payment:3003/charge \
+    -H 'Content-Type: application/json' \
+    -H 'X-Request-ID: callback-fail-test' \
+    -d '{\"order_id\":\"ORD-TEST\",\"amount\":50}'" | python3 -m json.tool
+# Expected: {"outcome": "success", "confirm": "failed"}
+
+# Verify the warning was logged:
+docker compose logs payment | grep "callback-fail-test"
+# Expected: confirm_error log line
+
+docker compose start order
+sleep 5
+```
+
+### 8d — Acyclic startup (no circular dependency)
+
+```bash
+docker compose down
+docker compose up -d 2>&1 | head -20
+```
+
+Expected: payment and inventory start first, then order (waits for both healthy), then nginx. No "circular dependency" error.
+
+## Test 9 — Dependency recovery (service restart)
+
+```bash
+# Kill inventory:
+docker compose stop inventory
+sleep 2
+
+# Order degrades gracefully (502, not crash):
+curl -s -X POST http://localhost:8080/checkout | python3 -m json.tool
+# Expected: 502 with "inventory service unavailable"
+
+# Order liveness still passes:
+curl -s http://localhost:8080/health | python3 -m json.tool
+# Expected: 200
+
+# Restart inventory — order recovers automatically:
+docker compose start inventory
+sleep 5
+curl -s -X POST http://localhost:8080/checkout | python3 -m json.tool
+# Expected: 200 with "outcome": "success"
 ```

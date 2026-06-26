@@ -15,9 +15,16 @@ services:
   order:                                
     build: .
     image: psenv-service:latest
-    command: python services/order/app.py
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3001
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.order.app:app
     environment:
-      BIND_HOST: 0.0.0.0
+      BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3001"
       INVENTORY_URL: http://inventory:3002   
     restart: unless-stopped                  
@@ -36,9 +43,16 @@ services:
   inventory:                              
     build: .
     image: psenv-service:latest
-    command: python services/inventory/app.py
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3002
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.inventory.app:app
     environment:
-      BIND_HOST: 0.0.0.0
+      BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3002"
       PAYMENT_URL: http://payment:3003
     restart: unless-stopped
@@ -52,9 +66,16 @@ services:
   payment:                               
     build: .
     image: psenv-service:latest
-    command: python services/payment/app.py
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3003
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.payment.app:app
     environment:
-      BIND_HOST: 0.0.0.0
+      BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3003"
       ORDER_URL: http://order:3001          
     restart: unless-stopped

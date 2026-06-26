@@ -1,20 +1,9 @@
-# Keep the Docker build context small and free of local/dev artifacts.
-.git/
-.gitignore
-
-# Python virtual environments and caches
-**/.venv/
-.venv/
-**/__pycache__/
-**/*.pyc
-
-# Logs and OS junk
+.git
+.venv
+venv
+__pycache__
+*.pyc
 *.log
-**/.DS_Store
 .DS_Store
-
-# Things not needed inside the image
 docs/
-systemd/
-scripts/
 *.md

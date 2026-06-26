@@ -23,8 +23,11 @@ import uuid
 import requests
 from flask import Flask, request, jsonify
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common.logging_setup import get_logger, log_event  # noqa: E402
+try:
+    from services.common.logging_setup import get_logger, log_event
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from common.logging_setup import get_logger, log_event  # noqa: E402
 
 SERVICE_NAME = "order-service"
 
@@ -57,6 +60,28 @@ def health():
     log_event(log, "health_check", "health endpoint queried",
               request_id=rid, path="/health", outcome="ok")
     return jsonify(status="ok", service=SERVICE_NAME), 200
+
+
+@app.get("/ready")
+def ready():
+    """Readiness probe — reports whether downstream dependencies are reachable."""
+    rid = request_id_from(request)
+    deps = {"inventory": False}
+    try:
+        r = requests.get(f"{INVENTORY_URL}/ready", timeout=2)
+        deps["inventory"] = r.status_code == 200
+    except requests.exceptions.RequestException:
+        pass
+
+    all_ready = all(deps.values())
+    status_code = 200 if all_ready else 503
+    log_event(log, "readiness_check", "readiness probe",
+              request_id=rid, path="/ready",
+              outcome="ready" if all_ready else "not_ready",
+              dependencies=deps,
+              level=20 if all_ready else 30)
+    return jsonify(status="ready" if all_ready else "not_ready",
+                   service=SERVICE_NAME, dependencies=deps), status_code
 
 
 @app.post("/checkout")
