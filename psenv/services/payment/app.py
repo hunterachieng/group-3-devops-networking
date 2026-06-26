@@ -20,8 +20,11 @@ import uuid
 import requests
 from flask import Flask, request, jsonify
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common.logging_setup import get_logger, log_event  # noqa: E402
+try:
+    from services.common.logging_setup import get_logger, log_event
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from common.logging_setup import get_logger, log_event  # noqa: E402
 
 SERVICE_NAME = "payment-service"
 
@@ -52,6 +55,18 @@ def health():
     log_event(log, "health_check", "health endpoint queried",
               request_id=rid, path="/health", outcome="ok")
     return jsonify(status="ok", service=SERVICE_NAME), 200
+
+
+@app.get("/ready")
+def ready():
+    """Readiness probe — Payment has no downstream deps for liveness, but
+    the callback to Order is best-effort, so readiness is always true
+    when the process is alive."""
+    rid = request_id_from(request)
+    log_event(log, "readiness_check", "readiness probe",
+              request_id=rid, path="/ready", outcome="ready")
+    return jsonify(status="ready", service=SERVICE_NAME,
+                   dependencies={}), 200
 
 
 @app.post("/charge")
