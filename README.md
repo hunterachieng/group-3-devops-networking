@@ -20,7 +20,8 @@ Only Order is publicly reachable, and only through Nginx. Inventory and Payment
 are internal infrastructure: they bind to loopback and are unreachable from
 outside the VM. Every service exposes a health endpoint, emits structured JSON
 logs, propagates a request trace across the whole pipeline, starts on boot,
-restarts on failure, and recovers automatically after a reboot.
+restarts on failure, and recovers automatically after a reboot. Services are
+served by Gunicorn (a production WSGI server), not the Flask dev server.
 
 ---
 
@@ -32,7 +33,9 @@ restarts on failure, and recovers automatically after a reboot.
 | Inventory | inventory-service  | inventory.internal   | 3002 | no      | POST /reserve   |
 | Payment   | payment-service    | payment.internal     | 3003 | no      | POST /charge    |
 
-Every service also exposes `GET /health`. Payment confirms back to Order at
+Every service also exposes `GET /health` (liveness) and `GET /ready` (readiness:
+reflects whether required downstream dependencies are reachable). Payment confirms
+back to Order at
 `POST /confirm`.
 
 ```
@@ -329,14 +332,18 @@ containers; and `restart: unless-stopped` plus healthcheck-gated `depends_on`
 replace the systemd restart/ordering. Full evidence: `docs/CONTAINER_VALIDATION.md`.
 
 Files: `docker-compose.yml`, `Dockerfile` (one shared image, three commands),
-`nginx/nginx.compose.conf`, `.dockerignore`.
+`nginx/nginx.compose.conf`, `.dockerignore`. Full run + troubleshoot guide for
+both runtimes: `docs/RUNBOOK.md`.
 
 ## Documentation index
 
+- `docs/RUNBOOK.md` — **run + troubleshoot guide (both runtimes)** — start here for ops
 - `docs/SETUP.md` — first-time environment setup (per teammate)
 - `docs/SYSTEMD.md` — service lifecycle, dependencies, failure demos
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
+- `docs/CONTAINER_VALIDATION.md` — Docker Compose validation evidence (required deliverable)
+- `docs/PROOF.md` — production-readiness evidence (readiness, recovery, tracing)
 - `docs/TEAM-UPDATE.md` — how teammates sync after repo changes
-- `docs/CONTAINER_VALIDATION.md` — Docker Compose validation evidence
 - `docs/HANDOFF-containerization.md` — context for the containerization work
+- `docs/HANDOFF-readiness-context.md` — context for the readiness work
