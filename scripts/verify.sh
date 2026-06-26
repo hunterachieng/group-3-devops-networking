@@ -57,11 +57,21 @@ check_loopback_only 3003 "payment"
 check_public        80   "nginx"
 
 # -- 3. health ----------------------------------------------------------------
-section "3. Health endpoints (via loopback)"
+section "3. Health endpoints (liveness, via loopback)"
 for pp in order:3001 inventory:3002 payment:3003; do
   name=${pp%%:*}; port=${pp##*:}
   if curl -fsS -m3 "http://127.0.0.1:$port/health" >/dev/null 2>&1; then green "$name /health ok"
   else red "$name /health failed"; fi
+done
+
+# -- 3b. readiness ------------------------------------------------------------
+section "3b. Readiness endpoints (reflect downstream availability)"
+for pp in order:3001 inventory:3002 payment:3003; do
+  name=${pp%%:*}; port=${pp##*:}
+  code=$(curl -s -o /dev/null -w "%{http_code}" -m3 "http://127.0.0.1:$port/ready" 2>/dev/null)
+  if [ "$code" = "200" ]; then green "$name /ready -> 200 (ready)"
+  elif [ "$code" = "503" ]; then note "$name /ready -> 503 (a dependency is unavailable)"
+  else red "$name /ready -> ${code:-no response}"; fi
 done
 
 # -- 4. end-to-end flow through Nginx ----------------------------------------
