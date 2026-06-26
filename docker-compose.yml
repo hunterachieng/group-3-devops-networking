@@ -1,0 +1,82 @@
+# Containerized e-commerce pipeline.
+#
+# Service-name mapping for the assignment (A/B/C -> domain names):
+#   Service A = order      Service B = inventory      Service C = payment
+#
+# Properties preserved from the VM version:
+#   - Nginx is the ONLY container that publishes a host port (8080 -> 80).
+#   - inventory & payment publish NO ports -> unreachable from the host.
+#   - Services find each other by Compose service name (DNS), not localhost/IP.
+#   - Logs go to stdout -> visible via `docker compose logs`.
+#   - X-Request-ID is traced across nginx + all three services.
+#   - Stopping inventory yields a clean 502 and recovers when restarted.
+
+services:
+  order:                                
+    build: .
+    image: psenv-service:latest
+    command: python services/order/app.py
+    environment:
+      BIND_HOST: 0.0.0.0
+      SERVICE_PORT: "3001"
+      INVENTORY_URL: http://inventory:3002   
+    restart: unless-stopped                  
+    depends_on:
+      inventory:
+        condition: service_healthy
+      payment:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [appnet]
+
+  inventory:                              
+    build: .
+    image: psenv-service:latest
+    command: python services/inventory/app.py
+    environment:
+      BIND_HOST: 0.0.0.0
+      SERVICE_PORT: "3002"
+      PAYMENT_URL: http://payment:3003
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [appnet]
+
+  payment:                               
+    build: .
+    image: psenv-service:latest
+    command: python services/payment/app.py
+    environment:
+      BIND_HOST: 0.0.0.0
+      SERVICE_PORT: "3003"
+      ORDER_URL: http://order:3001          
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3003/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [appnet]
+    
+  nginx:                                  
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.compose.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      order:
+        condition: service_healthy         
+    restart: unless-stopped
+    networks: [appnet]
+
+networks:
+  appnet:
+    driver: bridge
