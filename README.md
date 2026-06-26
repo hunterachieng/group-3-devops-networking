@@ -291,6 +291,46 @@ service's logs show a `downstream_error` with the failing target.
 
 ---
 
+## Running with Docker Compose
+
+An alternative runtime: the same flow in containers, with Nginx as the only
+public entry. (Service A = order, B = inventory, C = payment.)
+
+```bash
+# start (build first time)
+docker compose up --build -d
+
+# test the public route (published on host port 8080)
+curl http://localhost:8080/health
+curl -X POST http://localhost:8080/checkout \
+  -H 'Content-Type: application/json' -d '{"items":["BOOK-42"],"amount":3500}'
+
+# prove inventory & payment are internal-only (no host port published)
+curl --connect-timeout 3 http://localhost:3002/health   # -> refused
+curl --connect-timeout 3 http://localhost:3003/health   # -> refused
+
+# view logs
+docker compose logs            # everything
+docker compose logs order      # one service
+
+# stop / restart a single service (failure demo)
+docker compose stop inventory
+docker compose start inventory
+
+# shut everything down
+docker compose down
+```
+
+How it preserves the production properties: only `nginx` publishes a port
+(`8080:80`); inventory/payment publish none and live on an internal bridge
+network; services reach each other by Compose service name (`http://inventory:3002`);
+logs go to stdout (`docker compose logs`); `X-Request-ID` is traced across all
+containers; and `restart: unless-stopped` plus healthcheck-gated `depends_on`
+replace the systemd restart/ordering. Full evidence: `docs/CONTAINER_VALIDATION.md`.
+
+Files: `docker-compose.yml`, `Dockerfile` (one shared image, three commands),
+`nginx/nginx.compose.conf`, `.dockerignore`.
+
 ## Documentation index
 
 - `docs/SETUP.md` — first-time environment setup (per teammate)
@@ -298,3 +338,5 @@ service's logs show a `downstream_error` with the failing target.
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
 - `docs/TEAM-UPDATE.md` — how teammates sync after repo changes
+- `docs/CONTAINER_VALIDATION.md` — Docker Compose validation evidence
+- `docs/HANDOFF-containerization.md` — context for the containerization work
