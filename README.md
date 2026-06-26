@@ -299,40 +299,62 @@ service's logs show a `downstream_error` with the failing target.
 An alternative runtime: the same flow in containers, with Nginx as the only
 public entry. (Service A = order, B = inventory, C = payment.)
 
-```bash
-# start (build first time)
-docker compose up --build -d
-# test the public route (published on host port 8080)
-<img width="1857" height="266" alt="Screenshot from 2026-06-26 20-47-39" src="https://github.com/user-attachments/assets/d1a34a3e-c9f5-4412-86a0-8e959c0c4d97" />
+Start (build first time):
 
+```bash
+docker compose up --build -d
+```
+
+Test the public route (published on host port 8080):
+
+```bash
 curl http://localhost:8080/health
+
 curl -X POST http://localhost:8080/checkout \
   -H 'Content-Type: application/json' -d '{"items":["BOOK-42"],"amount":3500}'
-<img width="1017" height="107" alt="Screenshot 2026-06-27 at 00 16 47" src="https://github.com/user-attachments/assets/340e69f2-f479-4404-80db-18603131c129" />
+```
 
-# prove inventory & payment are internal-only (no host port published)
+<img width="1017" alt="checkout response" src="https://github.com/user-attachments/assets/340e69f2-f479-4404-80db-18603131c129" />
+
+Prove inventory & payment are internal-only (no host port published):
+
+```bash
 curl --connect-timeout 3 http://localhost:3002/health   # -> refused
 curl --connect-timeout 3 http://localhost:3003/health   # -> refused
-<img width="1017" height="64" alt="Screenshot 2026-06-27 at 00 24 58" src="https://github.com/user-attachments/assets/831b2941-5ef5-4f35-aecc-84f8ea2f8a8e" />
+```
 
-# view logs
+<img width="1017" alt="connection refused" src="https://github.com/user-attachments/assets/831b2941-5ef5-4f35-aecc-84f8ea2f8a8e" />
+
+View logs:
+
+```bash
 docker compose logs            # everything
-<img width="1469" height="728" alt="Screenshot 2026-06-27 at 00 32 39" src="https://github.com/user-attachments/assets/e7fd9bad-8b9a-45a7-8759-93d882d07eac" />
+```
 
+<img width="1469" alt="all logs" src="https://github.com/user-attachments/assets/e7fd9bad-8b9a-45a7-8759-93d882d07eac" />
+
+```bash
 docker compose logs order      # one service
-<img width="1469" height="561" alt="Screenshot 2026-06-27 at 00 34 44" src="https://github.com/user-attachments/assets/d7f937e6-7ec3-407a-8a30-a5b693b4bbc9" />
+```
 
+<img width="1469" alt="order logs" src="https://github.com/user-attachments/assets/d7f937e6-7ec3-407a-8a30-a5b693b4bbc9" />
 
-# stop / restart a single service (failure demo)
+Stop / restart a single service (failure demo):
+
+```bash
 docker compose stop inventory
 docker compose start inventory
-<img width="1469" height="116" alt="Screenshot 2026-06-27 at 00 35 54" src="https://github.com/user-attachments/assets/292d8f5d-20db-4c93-8aff-d1f1d17f3cfc" />
-
-# shut everything down
-docker compose down
-<img width="1469" height="144" alt="Screenshot 2026-06-27 at 00 36 51" src="https://github.com/user-attachments/assets/3bcd6ddd-6c6d-45c8-80db-5241606e9d0e" />
-
 ```
+
+<img width="1469" alt="stop start inventory" src="https://github.com/user-attachments/assets/292d8f5d-20db-4c93-8aff-d1f1d17f3cfc" />
+
+Shut everything down:
+
+```bash
+docker compose down
+```
+
+<img width="1469" alt="compose down" src="https://github.com/user-attachments/assets/3bcd6ddd-6c6d-45c8-80db-5241606e9d0e" />
 
 How it preserves the production properties: only `nginx` publishes a port
 (`8080:80`); inventory/payment publish none and live on an internal bridge
