@@ -223,3 +223,44 @@ sleep 5
 curl -s -X POST http://localhost:8080/checkout | python3 -m json.tool
 # Expected: 200 with "outcome": "success"
 ```
+
+## Test 10 — Machine-verifiable distributed trace
+
+This test produces a concrete, grep-able log excerpt that confirms the same
+`X-Request-ID` appears in all four components (nginx, order, inventory, payment).
+
+```bash
+RID="trace-verify-$(date +%s)"
+
+curl -s -X POST http://localhost:8080/checkout \
+  -H "X-Request-ID: $RID" \
+  -H "Content-Type: application/json" \
+  -d '{"items":["SKU-TRACE"],"amount":99}' | python3 -m json.tool
+
+sleep 1
+
+echo "--- nginx ---"
+docker compose logs --no-log-prefix nginx   2>/dev/null | grep "$RID"
+echo "--- order ---"
+docker compose logs --no-log-prefix order   2>/dev/null | grep "$RID"
+echo "--- inventory ---"
+docker compose logs --no-log-prefix inventory 2>/dev/null | grep "$RID"
+echo "--- payment ---"
+docker compose logs --no-log-prefix payment 2>/dev/null | grep "$RID"
+```
+
+Expected output (one matching log line per section):
+
+```
+--- nginx ---
+{"timestamp":"...","service":"nginx",...,"request_id":"trace-verify-<epoch>",...}
+--- order ---
+{"timestamp":"...","service":"order-service","request_id":"trace-verify-<epoch>",...}
+--- inventory ---
+{"timestamp":"...","service":"inventory-service","request_id":"trace-verify-<epoch>",...}
+--- payment ---
+{"timestamp":"...","service":"payment-service","request_id":"trace-verify-<epoch>",...}
+```
+
+The trace is verified if all four sections are non-empty. An empty section means that
+component did not log the request ID and the trace chain is broken.
