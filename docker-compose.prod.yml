@@ -1,0 +1,110 @@
+# Production Compose file — uses pre-built Docker Hub images, never builds locally.
+#
+# Usage:
+#   export DOCKERHUB_USERNAME=<your-dockerhub-username>
+#   export APP_NAME=group-3-devops-networking
+#   ./scripts/deploy.sh sha-<short-commit-hash>
+#
+# IMAGE_TAG must be a commit-pinned sha-<hash> tag. Never use :latest.
+
+services:
+  order:
+    image: ${DOCKERHUB_USERNAME}/${APP_NAME}-order:${IMAGE_TAG}
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3001
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.order.app:app
+    environment:
+      BIND_HOST: "0.0.0.0"
+      SERVICE_PORT: "3001"
+      INVENTORY_URL: http://inventory:3002
+    restart: unless-stopped
+    stop_grace_period: 35s
+    depends_on:
+      inventory:
+        condition: service_healthy
+      payment:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - frontend
+      - backend
+
+  inventory:
+    image: ${DOCKERHUB_USERNAME}/${APP_NAME}-inventory:${IMAGE_TAG}
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3002
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.inventory.app:app
+    environment:
+      BIND_HOST: "0.0.0.0"
+      SERVICE_PORT: "3002"
+      PAYMENT_URL: http://payment:3003
+    restart: unless-stopped
+    stop_grace_period: 35s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+  payment:
+    image: ${DOCKERHUB_USERNAME}/${APP_NAME}-payment:${IMAGE_TAG}
+    command: >
+      gunicorn
+        --bind 0.0.0.0:3003
+        --workers 2
+        --threads 4
+        --access-logfile -
+        --error-logfile -
+        services.payment.app:app
+    environment:
+      BIND_HOST: "0.0.0.0"
+      SERVICE_PORT: "3003"
+      ORDER_URL: http://order:3001
+    restart: unless-stopped
+    stop_grace_period: 35s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3003/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.compose.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      order:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true   # backend services cannot reach the internet directly
