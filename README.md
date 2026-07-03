@@ -384,15 +384,15 @@ both runtimes: `docs/RUNBOOK.md`.
 
 | Field | Value |
 |---|---|
-| Commit | *(updated automatically after each push to main)* |
-| Image tag | `sha-<short-commit-hash>` |
+| Commit | `8be72c7c` |
+| Image tag | `sha-8be72c7` |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-<dockerhub-username>/group-3-devops-networking-order:sha-<short-commit-hash>
-<dockerhub-username>/group-3-devops-networking-inventory:sha-<short-commit-hash>
-<dockerhub-username>/group-3-devops-networking-payment:sha-<short-commit-hash>
+hunterachieng/group-3-devops-networking-order:sha-8be72c7
+hunterachieng/group-3-devops-networking-inventory:sha-8be72c7
+hunterachieng/group-3-devops-networking-payment:sha-8be72c7
 ```
 
 ### CI pipeline
@@ -409,9 +409,9 @@ See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.ym
 
 ```bash
 cp .env.example .env
-export DOCKERHUB_USERNAME=<your-dockerhub-username>
+export DOCKERHUB_USERNAME=hunterachieng
 export APP_NAME=group-3-devops-networking
-./scripts/deploy.sh sha-<short-commit-hash>
+./scripts/deploy.sh sha-8be72c7
 ```
 
 ### Verify after deploy
