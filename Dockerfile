@@ -29,5 +29,10 @@ ENV BIND_HOST=0.0.0.0 \
 
 USER appuser
 
+# All three ports are documented here because this shared image is used by
+# order (3001), inventory (3002), and payment (3003). The actual port bound
+# at runtime is controlled by the command/env in docker-compose.yml.
+EXPOSE 3001 3002 3003
+
 # Default command; overridden per service in docker-compose.yml.
 CMD ["python", "services/order/app.py"]

@@ -375,3 +375,48 @@ both runtimes: `docs/RUNBOOK.md`.
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
 - `docs/PROOF.md` — production-readiness evidence (readiness, recovery, tracing)
+
+---
+
+## Container CI/CD Deployment
+
+### Latest deployed version
+
+| Field | Value |
+|---|---|
+| Commit | *(updated automatically after each push to main)* |
+| Image tag | `sha-<short-commit-hash>` |
+
+Images published to Docker Hub after each merge to `main`:
+
+```
+<dockerhub-username>/group-3-devops-networking-order:sha-<short-commit-hash>
+<dockerhub-username>/group-3-devops-networking-inventory:sha-<short-commit-hash>
+<dockerhub-username>/group-3-devops-networking-payment:sha-<short-commit-hash>
+```
+
+### CI pipeline
+
+Every pull request runs three parallel jobs before merge is allowed:
+
+1. **`verify`** (×3 matrix) — installs Python deps, runs `pytest` for each service, builds the Docker image locally
+2. **`verify-compose`** — validates the Compose file, builds the full stack, and checks the gateway health endpoint
+3. **`publish`** *(main only)* — pushes commit-tagged images to Docker Hub
+
+See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.yml).
+
+### Deploy
+
+```bash
+cp .env.example .env
+export DOCKERHUB_USERNAME=<your-dockerhub-username>
+export APP_NAME=group-3-devops-networking
+./scripts/deploy.sh sha-<short-commit-hash>
+```
+
+### Verify after deploy
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+curl http://localhost:8080/health
+```

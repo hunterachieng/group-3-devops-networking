@@ -9,3 +9,8 @@ __pycache__/
 
 # Logs
 *.log
+
+# Environment — never commit real credentials
+.env
+.env.local
+.env.*.local

@@ -7,3 +7,12 @@ __pycache__
 .DS_Store
 docs/
 *.md
+.env
+.env.*
+.github/
+systemd/
+.qodo/
+psenv/tests/
+psenv/pytest.ini
+psenv/requirements-dev.txt
+scripts/
