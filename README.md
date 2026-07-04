@@ -417,6 +417,37 @@ export APP_NAME=group-3-devops-networking
 ### Verify after deploy
 
 ```bash
+# Stack status
 docker compose -f docker-compose.prod.yml ps
+
+# Gateway health
 curl http://localhost:8080/health
+
+# End-to-end checkout
+curl -s -X POST http://localhost:8080/checkout \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-1"],"amount":100}' | python3 -m json.tool
+```
+
+```bash
+# Verify image traceability — labels must show the commit SHA and source repo
+docker image inspect hunterachieng/group-3-devops-networking-order:sha-<short-commit-hash> \
+  --format '{{json .Config.Labels}}' | python3 -m json.tool
+```
+
+```bash
+# Verify internal services are unreachable from the host
+curl --connect-timeout 2 http://localhost:3002/health && echo "FAIL" || echo "PASS: inventory not exposed"
+curl --connect-timeout 2 http://localhost:3003/health && echo "FAIL" || echo "PASS: payment not exposed"
+```
+
+```bash
+# Verify containers run as non-root
+docker compose -f docker-compose.prod.yml exec order whoami
+# Expected: appuser
+```
+
+```bash
+# Tear down
+docker compose -f docker-compose.prod.yml down -v
 ```
