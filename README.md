@@ -384,15 +384,15 @@ both runtimes: `docs/RUNBOOK.md`.
 
 | Field | Value |
 |---|---|
-| Commit | `adbb19c` |
-| Image tag | `sha-adbb19c` |
+| Commit | *(see latest GitHub Actions run on main)* |
+| Image tag | `sha-<short-commit-hash>` |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-adbb19c
-12517282/group-3-devops-networking-inventory:sha-adbb19c
-12517282/group-3-devops-networking-payment:sha-adbb19c
+12517282/group-3-devops-networking-order:sha-<short-commit-hash>
+12517282/group-3-devops-networking-inventory:sha-<short-commit-hash>
+12517282/group-3-devops-networking-payment:sha-<short-commit-hash>
 ```
 
 ### CI pipeline
@@ -411,10 +411,17 @@ See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.ym
 cp .env.example .env
 export DOCKERHUB_USERNAME=12517282
 export APP_NAME=group-3-devops-networking
-./scripts/deploy.sh sha-adbb19c
+./scripts/deploy.sh sha-<short-commit-hash>
 ```
 
 ### Verify after deploy
+
+```bash
+# Pull images from Docker Hub
+docker pull 12517282/group-3-devops-networking-order:sha-<short-commit-hash>
+docker pull 12517282/group-3-devops-networking-inventory:sha-<short-commit-hash>
+docker pull 12517282/group-3-devops-networking-payment:sha-<short-commit-hash>
+```
 
 ```bash
 # Stack status
@@ -431,7 +438,7 @@ curl -s -X POST http://localhost:8080/checkout \
 
 ```bash
 # Verify image traceability — labels must show the commit SHA and source repo
-docker image inspect 12517282/group-3-devops-networking-order:sha-adbb19c \
+docker image inspect 12517282/group-3-devops-networking-order:sha-<short-commit-hash> \
   --format '{{json .Config.Labels}}' | python3 -m json.tool
 ```
 
