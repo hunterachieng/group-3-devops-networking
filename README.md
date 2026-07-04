@@ -390,9 +390,9 @@ both runtimes: `docs/RUNBOOK.md`.
 Images published to Docker Hub after each merge to `main`:
 
 ```
-<dockerhub-username>/group-3-devops-networking-order:sha-<short-commit-hash>
-<dockerhub-username>/group-3-devops-networking-inventory:sha-<short-commit-hash>
-<dockerhub-username>/group-3-devops-networking-payment:sha-<short-commit-hash>
+12517282/group-3-devops-networking-order:sha-<short-commit-hash>
+12517282/group-3-devops-networking-inventory:sha-<short-commit-hash>
+12517282/group-3-devops-networking-payment:sha-<short-commit-hash>
 ```
 
 ### CI pipeline
@@ -409,7 +409,7 @@ See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.ym
 
 ```bash
 cp .env.example .env
-export DOCKERHUB_USERNAME=<your-dockerhub-username>
+export DOCKERHUB_USERNAME=12517282
 export APP_NAME=group-3-devops-networking
 ./scripts/deploy.sh sha-<short-commit-hash>
 ```
@@ -431,7 +431,7 @@ curl -s -X POST http://localhost:8080/checkout \
 
 ```bash
 # Verify image traceability — labels must show the commit SHA and source repo
-docker image inspect hunterachieng/group-3-devops-networking-order:sha-<short-commit-hash> \
+docker image inspect 12517282/group-3-devops-networking-order:sha-<short-commit-hash> \
   --format '{{json .Config.Labels}}' | python3 -m json.tool
 ```
 
