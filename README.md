@@ -382,18 +382,21 @@ both runtimes: `docs/RUNBOOK.md`.
 
 ### Latest deployed version
 
+<!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | *(see latest GitHub Actions run on main)* |
-| Image tag | `sha-<short-commit-hash>` |
+| Commit | [`a1b2c3d4e5f60718293a4b5c6d7e8f9012345678`](https://github.com/hunterachieng/group-3-devops-networking/commit/a1b2c3d4e5f60718293a4b5c6d7e8f9012345678) |
+| Image tag | `sha-a1b2c3d` |
+| Run | [1234567890](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/1234567890) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-<short-commit-hash>
-12517282/group-3-devops-networking-inventory:sha-<short-commit-hash>
-12517282/group-3-devops-networking-payment:sha-<short-commit-hash>
+12517282/group-3-devops-networking-order:sha-a1b2c3d
+12517282/group-3-devops-networking-inventory:sha-a1b2c3d
+12517282/group-3-devops-networking-payment:sha-a1b2c3d
 ```
+<!-- DEPLOYMENT_RECORD:END -->
 
 ### CI pipeline
 

@@ -16,7 +16,7 @@ jobs:
     name: Verify ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false          # let all three run even if one fails
+      fail-fast: false         
       matrix:
         include:
           - service: order
@@ -139,3 +139,39 @@ jobs:
           echo "### Published Image" >> "$GITHUB_STEP_SUMMARY"
           echo "**Service:** ${{ matrix.service }}" >> "$GITHUB_STEP_SUMMARY"
           echo "**Image:** \`${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-${{ matrix.service }}:sha-${SHORT_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  # ── Job 4: write the real deployment record back into README.md ───────────
+  record-deployment:
+    name: Record deployment
+    runs-on: ubuntu-latest
+    needs: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set short commit hash
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Update deployment record in README
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          python3 scripts/update_deployment_record.py \
+            --commit "${{ github.sha }}" \
+            --tag "sha-${SHORT_SHA}" \
+            --run-url "$RUN_URL" \
+            --dockerhub-username "${{ vars.DOCKERHUB_USERNAME }}" \
+            --app-name "${{ github.event.repository.name }}"
+
+      - name: Commit and push updated README
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update deployment record for ${SHORT_SHA} [skip ci]"
+          git push
