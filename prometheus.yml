@@ -1,0 +1,25 @@
+# Prometheus scrape config for the e-commerce pipeline.
+#
+# Targets use Compose service names (order/inventory/payment), not
+# localhost - same DNS-by-service-name rule the app services already
+# follow in docker-compose.yml. metrics_path defaults to /metrics.
+
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    project: group-3-devops-networking
+
+scrape_configs:
+  - job_name: order
+    static_configs:
+      - targets: ["order:3001"]
+
+  - job_name: inventory
+    static_configs:
+      - targets: ["inventory:3002"]
+
+  - job_name: payment
+    static_configs:
+      - targets: ["payment:3003"]

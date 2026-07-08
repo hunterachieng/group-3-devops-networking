@@ -17,6 +17,7 @@ services:
     image: psenv-service:latest
     command: >
       gunicorn
+        --config gunicorn.conf.py
         --bind 0.0.0.0:3001
         --workers 2
         --threads 4
@@ -27,6 +28,7 @@ services:
       BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3001"
       INVENTORY_URL: http://inventory:3002   
+      PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
     restart: unless-stopped                  
     stop_grace_period: 35s
     depends_on:
@@ -47,6 +49,7 @@ services:
     image: psenv-service:latest
     command: >
       gunicorn
+        --config gunicorn.conf.py
         --bind 0.0.0.0:3002
         --workers 2
         --threads 4
@@ -57,6 +60,7 @@ services:
       BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3002"
       PAYMENT_URL: http://payment:3003
+      PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
     restart: unless-stopped
     stop_grace_period: 35s
     healthcheck:
@@ -72,6 +76,7 @@ services:
     image: psenv-service:latest
     command: >
       gunicorn
+        --config gunicorn.conf.py
         --bind 0.0.0.0:3003
         --workers 2
         --threads 4
@@ -82,6 +87,7 @@ services:
       BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3003"
       ORDER_URL: http://order:3001          
+      PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
     restart: unless-stopped
     stop_grace_period: 35s
     healthcheck:
@@ -104,6 +110,40 @@ services:
     restart: unless-stopped
     networks: [appnet]
 
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      order:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      payment:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [appnet]
+    # No host port published on purpose - keeps the "only nginx is
+    # internet-facing" invariant intact. See "Viewing the Prometheus UI"
+    # note below if you want to browse it during development.
+
 networks:
   appnet:
     driver: bridge
+
+volumes:
+  prometheus-data:

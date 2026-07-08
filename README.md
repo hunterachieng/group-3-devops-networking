@@ -375,6 +375,7 @@ both runtimes: `docs/RUNBOOK.md`.
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
 - `docs/PROOF.md` — production-readiness evidence (readiness, recovery, tracing)
+- `docs/METRICS.md` — Prometheus metric names, labels, and example PromQL
 
 ---
 
@@ -385,16 +386,16 @@ both runtimes: `docs/RUNBOOK.md`.
 <!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | [`43782bfb8c86720c05f84c1a52d15d29477d0502`](https://github.com/hunterachieng/group-3-devops-networking/commit/43782bfb8c86720c05f84c1a52d15d29477d0502) |
-| Image tag | `sha-43782bf` |
-| Run | [28967404690](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/28967404690) |
+| Commit | [`a1b2c3d4e5f60718293a4b5c6d7e8f9012345678`](https://github.com/hunterachieng/group-3-devops-networking/commit/a1b2c3d4e5f60718293a4b5c6d7e8f9012345678) |
+| Image tag | `sha-a1b2c3d` |
+| Run | [1234567890](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/1234567890) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-43782bf
-12517282/group-3-devops-networking-inventory:sha-43782bf
-12517282/group-3-devops-networking-payment:sha-43782bf
+12517282/group-3-devops-networking-order:sha-a1b2c3d
+12517282/group-3-devops-networking-inventory:sha-a1b2c3d
+12517282/group-3-devops-networking-payment:sha-a1b2c3d
 ```
 <!-- DEPLOYMENT_RECORD:END -->
 
