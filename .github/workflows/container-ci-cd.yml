@@ -5,6 +5,8 @@ on:
     branches: [main]
   push:
     branches: [main]
+    paths-ignore:
+      - "README.md"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +18,7 @@ jobs:
     name: Verify ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false         
+      fail-fast: false          # let all three run even if one fails
       matrix:
         include:
           - service: order
@@ -148,6 +150,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -167,11 +170,20 @@ jobs:
             --dockerhub-username "${{ vars.DOCKERHUB_USERNAME }}" \
             --app-name "${{ github.event.repository.name }}"
 
-      - name: Commit and push updated README
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "chore: update deployment record for ${SHORT_SHA} [skip ci]"
-          git push
+      - name: Open PR with updated deployment record
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update deployment record for ${{ env.SHORT_SHA }}"
+          branch: "bot/deployment-record-${{ env.SHORT_SHA }}"
+          delete-branch: true
+          title: "chore: deployment record for ${{ env.SHORT_SHA }}"
+          body: "Automated update of the deployment record for commit ${{ github.sha }}."
+          add-paths: README.md
+
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-number
+        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
