@@ -23,9 +23,11 @@ from flask import Flask, request, jsonify
 
 try:
     from services.common.logging_setup import get_logger, log_event
+    from services.common.metrics import init_metrics
 except ImportError:
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from common.logging_setup import get_logger, log_event  # noqa: E402
+    from common.metrics import init_metrics  # noqa: E402
 
 SERVICE_NAME = "inventory-service"
 
@@ -39,6 +41,7 @@ ORDER_ID_HEADER = "X-Order-ID"
 
 log = get_logger(SERVICE_NAME)
 app = Flask(__name__)
+init_metrics(app, SERVICE_NAME)
 
 
 def request_id_from(req) -> str:
