@@ -1,0 +1,22 @@
+# Auto-loaded by Grafana on startup (see docker-compose volume mounts).
+# URLs use Compose DNS names so Grafana reaches Prometheus/Jaeger on appnet.
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 15s
+
+  - name: Jaeger
+    type: jaeger
+    uid: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    editable: false
