@@ -471,16 +471,16 @@ alert transitions).
 <!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | [`18e0ecc0b50d9c068b49f86dc8cda2b8f1478ed9`](https://github.com/hunterachieng/group-3-devops-networking/commit/18e0ecc0b50d9c068b49f86dc8cda2b8f1478ed9) |
-| Image tag | `sha-18e0ecc` |
-| Run | [29041098239](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29041098239) |
+| Commit | [`c3f670adb2ca523bc011974cab488498755f80e9`](https://github.com/hunterachieng/group-3-devops-networking/commit/c3f670adb2ca523bc011974cab488498755f80e9) |
+| Image tag | `sha-c3f670a` |
+| Run | [29046421646](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29046421646) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-18e0ecc
-12517282/group-3-devops-networking-inventory:sha-18e0ecc
-12517282/group-3-devops-networking-payment:sha-18e0ecc
+12517282/group-3-devops-networking-order:sha-c3f670a
+12517282/group-3-devops-networking-inventory:sha-c3f670a
+12517282/group-3-devops-networking-payment:sha-c3f670a
 ```
 <!-- DEPLOYMENT_RECORD:END -->
 
