@@ -22,6 +22,8 @@ import logging
 import sys
 from datetime import datetime, timezone
 
+from .tracing import current_trace_ids
+
 
 class JsonFormatter(logging.Formatter):
     """Render each log record as a single line of JSON."""
@@ -42,10 +44,17 @@ class JsonFormatter(logging.Formatter):
             "message": record.getMessage(),
         }
 
-        # WHICH request triggered this (the trace / correlation id)
+        # WHICH request triggered this (the business correlation id)
         request_id = getattr(record, "request_id", None)
         if request_id is not None:
             entry["request_id"] = request_id
+
+        # WHICH distributed trace/span this line belongs to, so a log line
+        # can be jumped to directly in Jaeger.
+        trace_id, span_id = current_trace_ids()
+        if trace_id is not None:
+            entry["trace_id"] = trace_id
+            entry["span_id"] = span_id
 
         # Any extra structured context (method, path, status, outcome, ...)
         extra_fields = getattr(record, "extra_fields", None)
@@ -81,7 +90,9 @@ def log_event(logger: logging.Logger, event: str, message: str = None,
 
     event      : short machine-friendly tag, e.g. "request_received"
     message    : human-readable description (defaults to the event tag)
-    request_id : the trace id so this line can be correlated
+    request_id : the business correlation id so this line can be grepped
+                 across services (trace_id/span_id are added automatically
+                 from the active OpenTelemetry span, see JsonFormatter)
     fields     : any extra key/values (method, path, status, outcome...)
     """
     extra = {"extra_fields": {"event": event, **fields}}

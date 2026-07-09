@@ -27,15 +27,18 @@ services:
     environment:
       BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3001"
-      INVENTORY_URL: http://inventory:3002   
+      INVENTORY_URL: http://inventory:3002
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
-    restart: unless-stopped                  
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    restart: unless-stopped
     stop_grace_period: 35s
     depends_on:
       inventory:
         condition: service_healthy
       payment:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:3001/health"]
       interval: 10s
@@ -61,8 +64,12 @@ services:
       SERVICE_PORT: "3002"
       PAYMENT_URL: http://payment:3003
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     restart: unless-stopped
     stop_grace_period: 35s
+    depends_on:
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:3002/health"]
       interval: 10s
@@ -86,10 +93,14 @@ services:
     environment:
       BIND_HOST: "0.0.0.0"
       SERVICE_PORT: "3003"
-      ORDER_URL: http://order:3001          
+      ORDER_URL: http://order:3001
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     restart: unless-stopped
     stop_grace_period: 35s
+    depends_on:
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:3003/health"]
       interval: 10s
@@ -97,8 +108,17 @@ services:
       retries: 5
       start_period: 30s
     networks: [appnet]
-    
-  nginx:                                  
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.69.0
+    ports:
+      - "16686:16686"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    restart: unless-stopped
+    networks: [appnet]
+
+  nginx:
     image: nginx:1.27.5-alpine
     ports:
       - "8080:80"
