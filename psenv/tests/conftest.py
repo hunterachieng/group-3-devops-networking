@@ -9,6 +9,11 @@ module (e.g. test_inventory.py) may import services.common.metrics,
 and therefore prometheus_client, before test_metrics.py's own code
 runs, the env var has to be set here, in conftest.py, which pytest
 always loads before collecting any test module in this directory.
+
+OTEL_SDK_DISABLED is set for the same reason: it must exist before
+services.common.tracing (and therefore the OpenTelemetry SDK) is first
+imported, so tests never try to export spans to a Jaeger collector
+that isn't running in CI/locally.
 """
 import os
 import shutil
@@ -16,6 +21,7 @@ import tempfile
 
 _MULTIPROC_DIR = tempfile.mkdtemp(prefix="pytest_prometheus_multiproc_")
 os.environ.setdefault("PROMETHEUS_MULTIPROC_DIR", _MULTIPROC_DIR)
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
 
 
 def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
