@@ -2,7 +2,7 @@
 # Each service runs this same image with a different `command` in compose -
 # they only differ by which app.py they launch and their env vars.
 
-FROM python:3.12-slim
+FROM python:3.12.13-slim
 
 # curl is needed for container healthchecks and the in-network discovery tests.
 RUN apt-get update \
