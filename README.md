@@ -386,16 +386,16 @@ both runtimes: `docs/RUNBOOK.md`.
 <!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | [`1d2f719de24ee5137ff19e48aa5a586e36724f3a`](https://github.com/hunterachieng/group-3-devops-networking/commit/1d2f719de24ee5137ff19e48aa5a586e36724f3a) |
-| Image tag | `sha-1d2f719` |
-| Run | [28975274532](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/28975274532) |
+| Commit | [`18e0ecc0b50d9c068b49f86dc8cda2b8f1478ed9`](https://github.com/hunterachieng/group-3-devops-networking/commit/18e0ecc0b50d9c068b49f86dc8cda2b8f1478ed9) |
+| Image tag | `sha-18e0ecc` |
+| Run | [29041098239](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29041098239) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-1d2f719
-12517282/group-3-devops-networking-inventory:sha-1d2f719
-12517282/group-3-devops-networking-payment:sha-1d2f719
+12517282/group-3-devops-networking-order:sha-18e0ecc
+12517282/group-3-devops-networking-inventory:sha-18e0ecc
+12517282/group-3-devops-networking-payment:sha-18e0ecc
 ```
 <!-- DEPLOYMENT_RECORD:END -->
 
