@@ -1,1 +1,6 @@
-pytest>=8.0,<9.0
+# Locked: pip install -r requirements.txt -r requirements-dev.in && pip freeze
+# Additions on top of requirements.txt only (CI installs both files together).
+iniconfig==2.3.0
+pluggy==1.6.0
+Pygments==2.20.0
+pytest==8.4.2
