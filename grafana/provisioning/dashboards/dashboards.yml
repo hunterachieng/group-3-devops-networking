@@ -1,0 +1,16 @@
+# Tells Grafana to auto-import every JSON file under /var/lib/grafana/dashboards.
+# That path is mounted from ./grafana/dashboards in docker-compose.yml.
+
+apiVersion: 1
+
+providers:
+  - name: melt-dashboards
+    orgId: 1
+    folder: MELT
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

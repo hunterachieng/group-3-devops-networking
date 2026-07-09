@@ -1,0 +1,51 @@
+# Prometheus alerting rules for the e-commerce pipeline.
+#
+# Loaded by prometheus.yml (rule_files). Prometheus evaluates these every
+# evaluation_interval (15s) and exposes firing/pending state via ALERTS{}.
+#
+# Job names match scrape_configs in prometheus.yml: order, inventory, payment.
+# App metric labels use service= from metrics.py (order-service, etc.).
+
+groups:
+  - name: service-health
+    rules:
+      - alert: ServiceDown
+        expr: up{job=~"order|inventory|payment"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: >-
+            Prometheus scrape target {{ $labels.job }} has been unreachable
+            for more than 1 minute (up == 0).
+
+  - name: error-rate
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_errors_total[2m])) by (service) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on {{ $labels.service }}"
+          description: >-
+            {{ $labels.service }} is producing more than 0.1 HTTP 5xx
+            errors per second (2m rate).
+
+  - name: latency
+    rules:
+      - alert: HighLatency
+        expr: >-
+          histogram_quantile(
+            0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          ) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency on {{ $labels.service }}"
+          description: >-
+            {{ $labels.service }} p95 latency is above 0.5s over the last
+            5 minutes.

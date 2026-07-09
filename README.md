@@ -367,6 +367,88 @@ Files: `docker-compose.yml`, `Dockerfile` (one shared image, three commands),
 `nginx/nginx.compose.conf`, `.dockerignore`. Full run + troubleshoot guide for
 both runtimes: `docs/RUNBOOK.md`.
 
+---
+
+## Observability (Compose)
+
+Dev Compose also runs **Prometheus**, **Grafana**, and **Jaeger** so you can
+see metrics, alerts, and traces for the checkout pipeline.
+
+| UI | URL (dev) | Login |
+|----|-----------|--------|
+| Grafana (operating view) | http://localhost:3000 | anonymous Viewer, or `admin` / `admin` |
+| Prometheus | http://localhost:9090 | — |
+| Jaeger | http://localhost:16686 | — |
+
+**Tip:** if `docker compose up --build -d` fails with
+`image "psenv-service:latest": already exists`, build one service first, then
+start:
+
+```bash
+docker compose build order
+docker compose up -d
+```
+
+### Open the Grafana cockpit
+
+1. Start the stack (`docker compose up -d`).
+2. Open http://localhost:3000 → **Dashboards → MELT → MELT Operating View**.
+3. Generate traffic, then watch request rate / latency panels:
+
+```bash
+curl -s -X POST http://localhost:8080/checkout \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-1"],"amount":4200}'
+```
+
+### View metrics
+
+- Per service: `curl -s http://localhost:8080/metrics` is **not** exposed on
+  the gateway; scrape targets are internal (`order:3001`, etc.).
+- Use Prometheus → **Graph**, or the Grafana dashboard panels.
+- Metric contract: `http_requests_total`, `http_request_duration_seconds`,
+  `http_errors_total`, `service_up` (see `psenv/services/common/metrics.py`).
+
+### View traces
+
+```bash
+curl -s -X POST http://localhost:8080/checkout \
+  -H 'Content-Type: application/json' \
+  -d '{"items":["SKU-1"],"amount":4200}'
+```
+
+Open http://localhost:16686 → Service **`order-service`** → Find Traces.
+Full walkthrough: `jaeger/README.md`.
+
+### View logs
+
+```bash
+docker compose logs order --tail=50
+```
+
+### Confirm alerts
+
+Rules live in `alert-rules.yml` (ServiceDown, HighErrorRate, HighLatency).
+Full meaning / reproduce / recover steps: **`docs/ALERTS.md`**.
+
+```bash
+curl -s http://localhost:9090/api/v1/rules | jq -r '.data.groups[].rules[].name'
+
+docker compose stop inventory
+curl -s http://localhost:9090/api/v1/alerts \
+  | jq '.data.alerts[] | {alertname: .labels.alertname, state, job: .labels.job}'
+
+docker compose start inventory
+```
+
+Also check Grafana → **Alert state (firing)** on the MELT dashboard.
+
+### Operational events
+
+Deploy start, load-test markers, failure triggered, and alert fired are
+documented in **`docs/EVENTS.md`** (structured logs + Grafana annotations +
+alert transitions).
+
 ## Documentation index
 
 - `docs/RUNBOOK.md` — **run + troubleshoot guide (both runtimes)** — start here for ops
@@ -376,6 +458,9 @@ both runtimes: `docs/RUNBOOK.md`.
 - `docs/NETWORK-SECURITY.md` — protection model and verification
 - `docs/PROOF.md` — production-readiness evidence (readiness, recovery, tracing)
 - `docs/METRICS.md` — Prometheus metric names, labels, and example PromQL
+- `docs/ALERTS.md` — alert PromQL, reproduce, and recovery runbook
+- `docs/EVENTS.md` — operational events (deploy, load test, failure, alert)
+- `jaeger/README.md` — distributed tracing demo path
 
 ---
 
