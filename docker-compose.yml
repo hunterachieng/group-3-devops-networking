@@ -30,6 +30,7 @@ services:
       INVENTORY_URL: http://inventory:3002
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      ENABLE_FAILURE_ENDPOINTS: "true"
     restart: unless-stopped
     stop_grace_period: 35s
     depends_on:
@@ -65,6 +66,7 @@ services:
       PAYMENT_URL: http://payment:3003
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      ENABLE_FAILURE_ENDPOINTS: "true"
     restart: unless-stopped
     stop_grace_period: 35s
     depends_on:
@@ -96,6 +98,7 @@ services:
       ORDER_URL: http://order:3001
       PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus_multiproc
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      ENABLE_FAILURE_ENDPOINTS: "true"
     restart: unless-stopped
     stop_grace_period: 35s
     depends_on:

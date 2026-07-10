@@ -449,10 +449,62 @@ Deploy start, load-test markers, failure triggered, and alert fired are
 documented in **`docs/EVENTS.md`** (structured logs + Grafana annotations +
 alert transitions).
 
+### Run load tests
+
+Prove the telemetry moves under load. Load is generated with
+[k6](https://k6.io/) via [scripts/load-test.js](scripts/load-test.js) — one file,
+three scenarios selected with `SCENARIO`. All traffic enters through Nginx
+(`http://localhost:8080`).
+
+```bash
+# start the stack first
+docker compose up -d --build
+
+# run a scenario (native k6)
+k6 run                     scripts/load-test.js   # baseline: 5 req/s, healthy checkout
+k6 run -e SCENARIO=stress  scripts/load-test.js   # stress:   ramp to 150 req/s
+k6 run -e SCENARIO=failure scripts/load-test.js   # failure:  drives the fault endpoints
+k6 run -e SCENARIO=all     scripts/load-test.js   # all three back-to-back
+
+# or with no local k6 install, via the container image:
+docker run --rm -i -v "$PWD/scripts:/scripts" \
+  -e SCENARIO=failure -e BASE_URL=http://host.docker.internal:8080 \
+  grafana/k6 run /scripts/load-test.js
+```
+
+Optional knobs: `-e DURATION=30s`, `-e RATE=8`, `-e BASE_URL=...`.
+
+### Trigger a failure
+
+The lab-only fault endpoints are exposed through Nginx (enabled by
+`ENABLE_FAILURE_ENDPOINTS` in `docker-compose.yml`; absent in
+`docker-compose.prod.yml`):
+
+```bash
+curl -X POST http://localhost:8080/fail             # -> 500  (error-rate spike)
+curl -X POST "http://localhost:8080/slow?seconds=2" # -> 200  (latency spike)
+curl -X POST http://localhost:8080/error            # -> 500  (structured error path)
+curl -X POST http://localhost:8080/dependency-fail  # -> 502  (broken downstream trace)
+```
+
+You can also take a whole dependency down to drive the `ServiceDown` alert:
+
+```bash
+docker compose stop inventory    # Order now returns a clean 502
+docker compose start inventory   # recovers automatically
+```
+
+Then watch the MELT signals move: metric spike in Grafana/Prometheus, alerts go
+`pending → firing`, the trace shows the failing span in Jaeger, and the logs show
+the structured error (grep by `trace_id`). Tool, exact commands, measured
+results, and observed MELT evidence are in **`docs/benchmark-report.md`**.
+
 ## Documentation index
 
 - `docs/RUNBOOK.md` — **run + troubleshoot guide (both runtimes)** — start here for ops
 - `docs/SETUP.md` — first-time environment setup (per teammate)
+- `docs/architecture.md` — **service, request, and telemetry (MELT) flow + diagram**
+- `docs/benchmark-report.md` — **load/failure test tool, commands, results, evidence**
 - `docs/SYSTEMD.md` — service lifecycle, dependencies, failure demos
 - `docs/NGINX.md` — reverse proxy deploy and operation
 - `docs/NETWORK-SECURITY.md` — protection model and verification
@@ -494,22 +546,23 @@ Every pull request runs three parallel jobs before merge is allowed:
 
 See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.yml).
 
+<!-- DEPLOYMENT_COMMANDS:START -->
 ### Deploy
 
 ```bash
 cp .env.example .env
 export DOCKERHUB_USERNAME=12517282
 export APP_NAME=group-3-devops-networking
-./scripts/deploy.sh sha-<short-commit-hash>
+./scripts/deploy.sh sha-c3f670a
 ```
 
 ### Verify after deploy
 
 ```bash
 # Pull images from Docker Hub
-docker pull 12517282/group-3-devops-networking-order:sha-<short-commit-hash>
-docker pull 12517282/group-3-devops-networking-inventory:sha-<short-commit-hash>
-docker pull 12517282/group-3-devops-networking-payment:sha-<short-commit-hash>
+docker pull 12517282/group-3-devops-networking-order:sha-c3f670a
+docker pull 12517282/group-3-devops-networking-inventory:sha-c3f670a
+docker pull 12517282/group-3-devops-networking-payment:sha-c3f670a
 ```
 
 ```bash
@@ -527,7 +580,7 @@ curl -s -X POST http://localhost:8080/checkout \
 
 ```bash
 # Verify image traceability — labels must show the commit SHA and source repo
-docker image inspect 12517282/group-3-devops-networking-order:sha-<short-commit-hash> \
+docker image inspect 12517282/group-3-devops-networking-order:sha-c3f670a \
   --format '{{json .Config.Labels}}' | python3 -m json.tool
 ```
 
@@ -547,3 +600,4 @@ docker compose -f docker-compose.prod.yml exec order whoami
 # Tear down
 docker compose -f docker-compose.prod.yml down -v
 ```
+<!-- DEPLOYMENT_COMMANDS:END -->

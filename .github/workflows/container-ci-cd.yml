@@ -171,7 +171,6 @@ jobs:
             --app-name "${{ github.event.repository.name }}"
 
       - name: Open PR with updated deployment record
-        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -181,9 +180,3 @@ jobs:
           title: "chore: deployment record for ${{ env.SHORT_SHA }}"
           body: "Automated update of the deployment record for commit ${{ github.sha }}."
           add-paths: README.md
-
-      - name: Enable auto-merge
-        if: steps.cpr.outputs.pull-request-number
-        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
