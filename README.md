@@ -523,16 +523,16 @@ results, and observed MELT evidence are in **`docs/benchmark-report.md`**.
 <!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | [`3c47c13cdabc85ec27389f6d1b9fc29f001f951d`](https://github.com/hunterachieng/group-3-devops-networking/commit/3c47c13cdabc85ec27389f6d1b9fc29f001f951d) |
-| Image tag | `sha-3c47c13` |
-| Run | [29115163409](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29115163409) |
+| Commit | [`82df65616250d9282d969879b06735ef44fad081`](https://github.com/hunterachieng/group-3-devops-networking/commit/82df65616250d9282d969879b06735ef44fad081) |
+| Image tag | `sha-82df656` |
+| Run | [29117207740](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29117207740) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-3c47c13
-12517282/group-3-devops-networking-inventory:sha-3c47c13
-12517282/group-3-devops-networking-payment:sha-3c47c13
+12517282/group-3-devops-networking-order:sha-82df656
+12517282/group-3-devops-networking-inventory:sha-82df656
+12517282/group-3-devops-networking-payment:sha-82df656
 ```
 <!-- DEPLOYMENT_RECORD:END -->
 
@@ -561,16 +561,16 @@ See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.ym
 cp .env.example .env
 export DOCKERHUB_USERNAME=12517282
 export APP_NAME=group-3-devops-networking
-./scripts/deploy.sh sha-3c47c13
+./scripts/deploy.sh sha-82df656
 ```
 
 ### Verify after deploy
 
 ```bash
 # Pull images from Docker Hub
-docker pull 12517282/group-3-devops-networking-order:sha-3c47c13
-docker pull 12517282/group-3-devops-networking-inventory:sha-3c47c13
-docker pull 12517282/group-3-devops-networking-payment:sha-3c47c13
+docker pull 12517282/group-3-devops-networking-order:sha-82df656
+docker pull 12517282/group-3-devops-networking-inventory:sha-82df656
+docker pull 12517282/group-3-devops-networking-payment:sha-82df656
 ```
 
 ```bash
@@ -588,7 +588,7 @@ curl -s -X POST http://localhost:8080/checkout \
 
 ```bash
 # Verify image traceability — labels must show the commit SHA and source repo
-docker image inspect 12517282/group-3-devops-networking-order:sha-3c47c13 \
+docker image inspect 12517282/group-3-devops-networking-order:sha-82df656 \
   --format '{{json .Config.Labels}}' | python3 -m json.tool
 ```
 
