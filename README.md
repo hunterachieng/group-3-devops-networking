@@ -371,8 +371,18 @@ both runtimes: `docs/RUNBOOK.md`.
 
 ## Observability (Compose)
 
-Dev Compose also runs **Prometheus**, **Grafana**, and **Jaeger** so you can
-see metrics, alerts, and traces for the checkout pipeline.
+Dev Compose (`docker-compose.yml`) also runs **Prometheus**, **Grafana**, and
+**Jaeger** and publishes their UIs to the host.
+
+> **Prod stack (`docker-compose.prod.yml`):** all three observability services
+> are on the internal `backend` network with no published ports — the same
+> "only nginx faces the internet" rule as the app services. To reach them on a
+> remote host, use an SSH tunnel:
+> ```bash
+> ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 16686:localhost:16686 <deploy-host>
+> ```
+> Then open the URLs below on your local machine as normal. See
+> `jaeger/README.md` for a Jaeger-specific walkthrough.
 
 | UI | URL (dev) | Login |
 |----|-----------|--------|
@@ -565,6 +575,17 @@ export APP_NAME=group-3-devops-networking
 ```
 
 ### Verify after deploy
+
+All `docker compose -f docker-compose.prod.yml` commands need three variables.
+Create `.env` with the real values in one command (docker compose reads it automatically):
+
+```bash
+cat > .env <<'EOF'
+IMAGE_TAG=sha-82df656
+DOCKERHUB_USERNAME=12517282
+APP_NAME=group-3-devops-networking
+EOF
+```
 
 ```bash
 # Pull images from Docker Hub
