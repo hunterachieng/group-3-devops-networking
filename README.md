@@ -541,10 +541,18 @@ Images published to Docker Hub after each merge to `main`:
 Every pull request runs three parallel jobs before merge is allowed:
 
 1. **`verify`** (×3 matrix) — installs Python deps, runs `pytest` for each service, builds the Docker image locally
-2. **`verify-compose`** — validates the Compose file, builds the full stack, and checks the gateway health endpoint
-3. **`publish`** *(main only)* — pushes commit-tagged images to Docker Hub
+2. **`verify-compose`** — validates **both** Compose files (dev + prod), builds the full stack, waits for healthchecks (`up -d --wait`), and checks the gateway health endpoint
+3. **`publish`** *(main only)* — builds **multi-arch** (`linux/amd64,linux/arm64`) commit-tagged images and pushes them to Docker Hub
 
 See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.yml).
+
+> **Note — the three published images are intentionally identical.** `order`,
+> `inventory`, and `payment` are built from the *same* [Dockerfile](Dockerfile)
+> and context, so they are byte-for-byte the same layers under three names. Each
+> service's role comes from its Compose `command` (which `app.py` Gunicorn
+> launches), not from the image. We keep three names for clear, self-documenting
+> `docker pull` lines and per-service traceability; they are not different
+> artifacts.
 
 <!-- DEPLOYMENT_COMMANDS:START -->
 ### Deploy
