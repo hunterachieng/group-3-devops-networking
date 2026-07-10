@@ -48,8 +48,8 @@ echo "Pulling images..."
 docker compose -f docker-compose.prod.yml pull
 
 echo ""
-echo "Starting stack..."
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+echo "Starting stack (waiting for healthchecks)..."
+docker compose -f docker-compose.prod.yml up -d --wait --wait-timeout 180 --remove-orphans
 
 echo ""
 echo "Stack status:"

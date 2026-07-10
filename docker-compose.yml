@@ -46,7 +46,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 30s
-    networks: [appnet]
+    networks: [frontend, backend]
 
   inventory:                              
     build: .
@@ -78,7 +78,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 30s
-    networks: [appnet]
+    networks: [backend]
 
   payment:                               
     build: .
@@ -110,7 +110,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 30s
-    networks: [appnet]
+    networks: [backend]
 
   jaeger:
     image: jaegertracing/all-in-one:1.69.0
@@ -119,7 +119,7 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
     restart: unless-stopped
-    networks: [appnet]
+    networks: [backend]
 
   nginx:
     image: nginx:1.27.5-alpine
@@ -131,7 +131,7 @@ services:
       order:
         condition: service_healthy         
     restart: unless-stopped
-    networks: [appnet]
+    networks: [frontend]
 
   prometheus:
     image: prom/prometheus:v2.55.1
@@ -160,7 +160,7 @@ services:
       payment:
         condition: service_healthy
     restart: unless-stopped
-    networks: [appnet]
+    networks: [backend]
 
   grafana:
     image: grafana/grafana:11.3.1
@@ -188,10 +188,17 @@ services:
       retries: 5
       start_period: 20s
     restart: unless-stopped
-    networks: [appnet]
+    networks: [backend]
 
 networks:
-  appnet:
+  # Mirrors the production two-tier split (docker-compose.prod.yml): only
+  # order + nginx sit on the frontend; inventory, payment, and the whole
+  # observability stack stay on the backend. Unlike prod, backend is NOT
+  # marked `internal` here, so the Grafana/Prometheus/Jaeger UIs can still be
+  # published to the host for local development.
+  frontend:
+    driver: bridge
+  backend:
     driver: bridge
 
 volumes:

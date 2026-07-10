@@ -66,33 +66,49 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Compose file
-        run: docker compose config
+      - name: Validate dev Compose file
+        run: docker compose config -q
+
+      - name: Validate prod Compose file
+        # Prod uses fail-loud ${VAR:?} variables; dummy values let the file
+        # render so the production topology is validated in CI, not just dev.
+        run: docker compose -f docker-compose.prod.yml config -q
+        env:
+          IMAGE_TAG: sha-ci00000
+          DOCKERHUB_USERNAME: ci-dummy
+          APP_NAME: ci-dummy
 
       - name: Build Compose stack
         run: docker compose build --pull
 
-      - name: Start Compose stack
-        run: docker compose up -d
+      - name: Start Compose stack (wait for healthchecks)
+        run: docker compose up -d --wait --wait-timeout 180
 
       - name: Show running services
         run: docker compose ps
 
       - name: Check gateway health
+        # --wait above gates on each container's own healthcheck, but nginx has
+        # no healthcheck and that only proves containers are up — not that the
+        # gateway actually serves traffic from the host. This retry loop is the
+        # end-to-end external check: poll the public gateway until it answers.
         run: |
-          echo "Waiting for stack to become healthy..."
+          echo "Waiting for the gateway to serve traffic..."
           for i in $(seq 1 12); do
             if curl --fail -s http://localhost:8080/health; then
               echo ""
-              echo "Stack is healthy."
+              echo "Gateway is healthy."
               exit 0
             fi
             echo "Attempt $i/12 — retrying in 5s"
             sleep 5
           done
-          echo "Stack did not become healthy in time"
-          docker compose logs
+          echo "Gateway did not become healthy in time"
           exit 1
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs
 
       - name: Stop Compose stack
         if: always()
@@ -115,6 +131,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -130,6 +152,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-${{ matrix.service }}:sha-${{ env.SHORT_SHA }}
           labels: |
