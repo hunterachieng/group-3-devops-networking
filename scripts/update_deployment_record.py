@@ -52,6 +52,17 @@ export APP_NAME={app}
 
 ### Verify after deploy
 
+All `docker compose -f docker-compose.prod.yml` commands need three variables.
+Create `.env` with the real values in one command (docker compose reads it automatically):
+
+```bash
+cat > .env <<'EOF'
+IMAGE_TAG={tag}
+DOCKERHUB_USERNAME={user}
+APP_NAME={app}
+EOF
+```
+
 ```bash
 # Pull images from Docker Hub
 docker pull {user}/{app}-order:{tag}
