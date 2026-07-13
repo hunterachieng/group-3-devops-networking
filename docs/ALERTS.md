@@ -7,9 +7,49 @@ in:
 - Prometheus UI → **Alerts** — http://localhost:9090/alerts
 - Grafana → **MELT Operating View** → “Alert state” / “Firing alert count” —
   http://localhost:3000
+- Slack → **`#group-3-alerts`** — fire and resolve messages via Alertmanager
 
 Rules file path inside the container: `/etc/prometheus/alert-rules.yml`
 (mounted from the repo root).
+
+---
+
+## Slack delivery (Alertmanager)
+
+Prometheus sends firing/resolved alerts to **Alertmanager**, which posts to
+Slack using an Incoming Webhook.
+
+```
+Prometheus (alert-rules.yml)
+    → Alertmanager (alertmanager.yml)
+        → Slack Incoming Webhook → #group-3-alerts
+```
+
+| Piece | Detail |
+|-------|--------|
+| Config | [`alertmanager.yml`](../alertmanager.yml) |
+| Secret | `SLACK_WEBHOOK_URL` in `.env` (see [`.env.example`](../.env.example)) |
+| Channel | `#group-3-alerts` |
+| Messages | Firing **and** resolved for all three alerts |
+| Local UI | http://localhost:9093 (dev Compose only; not published in prod) |
+| Slack links | Point at `localhost:9090` / `:9093` / `:3000` (same machine as Compose) |
+| Critical look | `:rotating_light:` critical firing; `:warning:` warning firing; `:white_check_mark:` resolve; red Slack bar when critical |
+
+**Bring-up**
+
+```bash
+# Ensure .env contains SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+docker compose up -d alertmanager prometheus
+```
+
+**Prove fire + resolve**
+
+```bash
+docker compose stop inventory
+# wait ~60–90s → Slack should show [FIRING] ServiceDown
+docker compose start inventory
+# wait until scrape recovers → Slack should show [RESOLVED] ServiceDown
+```
 
 ---
 

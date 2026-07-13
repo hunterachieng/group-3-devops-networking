@@ -130,6 +130,34 @@ services:
     networks:
       - frontend
 
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    environment:
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:?Set SLACK_WEBHOOK_URL in .env}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mkdir -p /etc/alertmanager/secrets
+        printf '%s' "$$SLACK_WEBHOOK_URL" > /etc/alertmanager/secrets/slack_webhook_url
+        exec /bin/alertmanager \
+          --config.file=/etc/alertmanager/alertmanager.yml \
+          --storage.path=/alertmanager \
+          --web.listen-address=:9093
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    # backend only — no published port (same invariant as Prometheus).
+    networks:
+      - backend
+
   prometheus:
     image: prom/prometheus:v2.55.1
     command:
@@ -153,6 +181,8 @@ services:
       inventory:
         condition: service_healthy
       payment:
+        condition: service_healthy
+      alertmanager:
         condition: service_healthy
     restart: unless-stopped
     # backend only - it needs to reach order/inventory/payment (all on
@@ -199,3 +229,4 @@ networks:
 volumes:
   prometheus-data:
   grafana-data:
+  alertmanager-data:

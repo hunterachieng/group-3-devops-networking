@@ -131,13 +131,16 @@ Nginx → Order → Inventory → Payment (and the Payment → Order callback).
 
 ### Alerting
 [alert-rules.yml](../alert-rules.yml) defines three rules evaluated by Prometheus
-and surfaced in Grafana:
+and surfaced in Grafana. Alertmanager delivers the same alerts to Slack
+`#group-3-alerts` (fire + resolve) using `SLACK_WEBHOOK_URL`:
 
 | Alert          | Condition (summary)                                             |
 |----------------|----------------------------------------------------------------|
 | `ServiceDown`  | `up{job=~"order|inventory|payment"} == 0` for 1m               |
 | `HighErrorRate`| `sum(rate(http_errors_total[2m])) by (service) > 0.1` for 1m   |
 | `HighLatency`  | p95 of `http_request_duration_seconds_bucket` > 0.5s for 2m    |
+
+See [docs/ALERTS.md](ALERTS.md) for the Slack delivery path and how to test it.
 
 ---
 

@@ -1,0 +1,50 @@
+# Alertmanager routes Prometheus alerts to Slack (#group-3-alerts).
+#
+# Links use localhost so they work in a browser on the same machine as
+# local Compose (Docker container hostnames are not resolvable from Firefox).
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: slack
+  group_by: [alertname, severity, service, job]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  - name: slack
+    slack_configs:
+      - api_url_file: /etc/alertmanager/secrets/slack_webhook_url
+        channel: "#group-3-alerts"
+        send_resolved: true
+        # Red bar for critical firing; yellow for warnings; green when resolved.
+        color: >-
+          {{ if eq .Status "firing" -}}
+            {{ if eq .CommonLabels.severity "critical" }}danger{{ else }}warning{{ end -}}
+          {{ else -}}
+            good
+          {{- end }}
+        # Clicking the title opens Prometheus alerts (works from your laptop).
+        title_link: "http://localhost:9090/alerts"
+        title: >-
+          {{ if eq .Status "resolved" }}:white_check_mark: {{ else if eq .CommonLabels.severity "critical" }}:rotating_light: {{ else if eq .CommonLabels.severity "warning" }}:warning: {{ end -}}
+          [{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}
+          ({{ .CommonLabels.severity }})
+        text: |-
+          {{ range .Alerts -}}
+          *Summary:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          {{- if .Labels.service }}
+          *Service:* `{{ .Labels.service }}`
+          {{- end }}
+          {{- if .Labels.job }}
+          *Job:* `{{ .Labels.job }}`
+          {{- end }}
+          *Starts:* {{ .StartsAt }}
+          {{ end }}
+          *Open:*
+          • <http://localhost:9090/alerts|Prometheus alerts>
+          • <http://localhost:9093/#/alerts|Alertmanager>
+          • <http://localhost:3000|Grafana MELT dashboard>
