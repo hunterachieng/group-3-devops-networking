@@ -134,15 +134,20 @@ services:
     networks: [frontend]
 
   alertmanager:
+    profiles: [alerts]
     image: prom/alertmanager:v0.27.0
     ports:
       - "9093:9093"
     environment:
-      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:?Set SLACK_WEBHOOK_URL in .env}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         set -e
+        if [ -z "$$SLACK_WEBHOOK_URL" ]; then
+          echo "ERROR: SLACK_WEBHOOK_URL must be set in .env when using the alerts profile."
+          exit 1
+        fi
         mkdir -p /etc/alertmanager/secrets
         printf '%s' "$$SLACK_WEBHOOK_URL" > /etc/alertmanager/secrets/slack_webhook_url
         exec /bin/alertmanager \
@@ -191,6 +196,7 @@ services:
         condition: service_healthy
       alertmanager:
         condition: service_healthy
+        required: false
     restart: unless-stopped
     networks: [backend]
 

@@ -29,6 +29,8 @@ Prometheus (alert-rules.yml)
 |-------|--------|
 | Config | [`alertmanager.yml`](../alertmanager.yml) |
 | Secret | `SLACK_WEBHOOK_URL` in `.env` (see [`.env.example`](../.env.example)) |
+| Local dev | Set `COMPOSE_PROFILES=alerts` in `.env` so Alertmanager starts with the stack |
+| Prod | Same `SLACK_WEBHOOK_URL` in `.env` on the server; `scripts/deploy.sh` exits if missing |
 | Channel | `#group-3-alerts` |
 | Messages | Firing **and** resolved for all three alerts |
 | Local UI | http://localhost:9093 (dev Compose only; not published in prod) |
@@ -38,7 +40,7 @@ Prometheus (alert-rules.yml)
 **Bring-up**
 
 ```bash
-# Ensure .env contains SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+# Ensure .env contains SLACK_WEBHOOK_URL and COMPOSE_PROFILES=alerts
 docker compose up -d alertmanager prometheus
 ```
 
