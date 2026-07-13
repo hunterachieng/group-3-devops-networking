@@ -34,6 +34,18 @@ if [ -z "${DOCKERHUB_USERNAME:-}" ]; then
   exit 1
 fi
 
+if [[ -f .env ]]; then
+  set -a
+  source .env
+  set +a
+fi
+
+if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
+  echo "ERROR: SLACK_WEBHOOK_URL is not set."
+  echo "Add SLACK_WEBHOOK_URL to .env on this server before deploying."
+  exit 1
+fi
+
 export IMAGE_TAG
 export APP_NAME="${APP_NAME:-$(basename "$PWD")}"
 

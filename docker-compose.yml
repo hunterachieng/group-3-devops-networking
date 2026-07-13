@@ -133,6 +133,40 @@ services:
     restart: unless-stopped
     networks: [frontend]
 
+  alertmanager:
+    profiles: [alerts]
+    image: prom/alertmanager:v0.27.0
+    ports:
+      - "9093:9093"
+    environment:
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        if [ -z "$$SLACK_WEBHOOK_URL" ]; then
+          echo "ERROR: SLACK_WEBHOOK_URL must be set in .env when using the alerts profile."
+          exit 1
+        fi
+        mkdir -p /etc/alertmanager/secrets
+        printf '%s' "$$SLACK_WEBHOOK_URL" > /etc/alertmanager/secrets/slack_webhook_url
+        exec /bin/alertmanager \
+          --config.file=/etc/alertmanager/alertmanager.yml \
+          --storage.path=/alertmanager \
+          --web.listen-address=:9093 \
+          --web.external-url=http://localhost:9093/
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks: [backend]
+
   prometheus:
     image: prom/prometheus:v2.55.1
     ports:
@@ -142,6 +176,7 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=15d"
       - "--web.enable-lifecycle"
+      - "--web.external-url=http://localhost:9090/"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
@@ -159,6 +194,9 @@ services:
         condition: service_healthy
       payment:
         condition: service_healthy
+      alertmanager:
+        condition: service_healthy
+        required: false
     restart: unless-stopped
     networks: [backend]
 
@@ -204,3 +242,4 @@ networks:
 volumes:
   prometheus-data:
   grafana-data:
+  alertmanager-data:
