@@ -497,17 +497,36 @@ curl -X POST http://localhost:8080/error            # -> 500  (structured error 
 curl -X POST http://localhost:8080/dependency-fail  # -> 502  (broken downstream trace)
 ```
 
+> **Important:** a single curl will not fire an alert. Alerts need sustained
+> traffic — use the k6 failure scenario (above) or these self-stopping loops:
+>
+> ```bash
+> # HighErrorRate — fires ~1 minute into the loop (for: 30s)
+> for i in $(seq 1 20); do
+>   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
+>     -X POST http://localhost:8080/fail
+>   sleep 3
+> done
+>
+> # HighLatency — fires ~1 minute into the loop (for: 30s)
+> for i in $(seq 1 20); do
+>   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
+>     -X POST "http://localhost:8080/slow?seconds=2"
+>   sleep 2
+> done
+> ```
+
 You can also take a whole dependency down to drive the `ServiceDown` alert:
 
 ```bash
-docker compose stop inventory    # Order now returns a clean 502
+docker compose stop inventory    # Order now returns a clean 502; fires after ~1m
 docker compose start inventory   # recovers automatically
 ```
 
 Then watch the MELT signals move: metric spike in Grafana/Prometheus, alerts go
 `pending → firing`, the trace shows the failing span in Jaeger, and the logs show
-the structured error (grep by `trace_id`). Tool, exact commands, measured
-results, and observed MELT evidence are in **`docs/benchmark-report.md`**.
+the structured error (grep by `trace_id`). Full alert timings, PromQL, and
+recovery steps: **`docs/ALERTS.md`**. Measured results: **`docs/benchmark-report.md`**.
 
 ## Documentation index
 

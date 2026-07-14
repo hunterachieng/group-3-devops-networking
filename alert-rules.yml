@@ -11,7 +11,7 @@ groups:
     rules:
       - alert: ServiceDown
         expr: up{job=~"order|inventory|payment"} == 0
-        for: 1m
+        for: 30s
         labels:
           severity: critical
         annotations:
@@ -24,7 +24,7 @@ groups:
     rules:
       - alert: HighErrorRate
         expr: sum(rate(http_errors_total[2m])) by (service) > 0.1
-        for: 1m
+        for: 30s
         labels:
           severity: warning
         annotations:
@@ -41,7 +41,7 @@ groups:
             0.95,
             sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
           ) > 0.5
-        for: 2m
+        for: 30s
         labels:
           severity: warning
         annotations:
