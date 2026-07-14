@@ -501,18 +501,18 @@ curl -X POST http://localhost:8080/dependency-fail  # -> 502  (broken downstream
 > traffic — use the k6 failure scenario (above) or these self-stopping loops:
 >
 > ```bash
-> # HighErrorRate — 40 requests over 2 minutes (fires after ~1m sustained)
-> for i in $(seq 1 40); do
+> # HighErrorRate — fires ~1 minute into the loop (for: 30s)
+> for i in $(seq 1 20); do
 >   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
 >     -X POST http://localhost:8080/fail
 >   sleep 3
 > done
 >
-> # HighLatency — 40 requests over ~3 minutes (fires after ~2m sustained)
-> for i in $(seq 1 40); do
+> # HighLatency — fires ~1 minute into the loop (for: 30s)
+> for i in $(seq 1 20); do
 >   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
 >     -X POST "http://localhost:8080/slow?seconds=2"
->   sleep 5
+>   sleep 2
 > done
 > ```
 

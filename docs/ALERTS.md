@@ -61,7 +61,7 @@ docker compose start inventory
 |-------|--------|
 | **Name** | `ServiceDown` |
 | **PromQL** | `up{job=~"order\|inventory\|payment"} == 0` |
-| **Pending** | `for: 1m` |
+| **Pending** | `for: 30s` |
 | **Severity** | `critical` |
 
 **What it means**  
@@ -114,12 +114,12 @@ Alert should leave **firing** (and disappear from the Grafana firing table).
 |-------|--------|
 | **Name** | `HighErrorRate` |
 | **PromQL** | `sum(rate(http_errors_total[2m])) by (service) > 0.1` |
-| **Pending** | `for: 1m` |
+| **Pending** | `for: 30s` |
 | **Severity** | `warning` |
 
 **What it means**  
 A service is producing more than ~0.1 HTTP 5xx responses per second (2-minute
-rate), sustained for 1 minute. `http_errors_total` only counts status ≥ 500
+rate), sustained for 30 seconds. `http_errors_total` only counts status ≥ 500
 (see `psenv/services/common/metrics.py`).
 
 **Possible causes**
@@ -139,8 +139,8 @@ docker run --rm -i -v "$PWD/scripts:/scripts" \
   -e SCENARIO=failure -e BASE_URL=http://host.docker.internal:8080 \
   grafana/k6 run /scripts/load-test.js
 
-# Option B — self-stopping loop (40 requests over ~2 minutes)
-for i in $(seq 1 40); do
+# Option B — self-stopping loop (20 requests, fires ~1 minute in)
+for i in $(seq 1 20); do
   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
     -X POST http://localhost:8080/fail
   sleep 3
@@ -153,7 +153,7 @@ watch -n5 'curl -s "localhost:9090/api/v1/query?query=sum(rate(http_errors_total
   | python3 -c "import sys,json;[print(r[\"metric\"][\"service\"],round(float(r[\"value\"][1]),3)) for r in json.load(sys.stdin)[\"data\"][\"result\"]]"'
 ```
 
-`HighErrorRate` enters **pending** once rate > 0.1, then **firing** after `for: 1m`.
+`HighErrorRate` enters **pending** once rate > 0.1, then **firing** after `for: 30s`.
 
 **First checks**
 
@@ -184,12 +184,12 @@ curl -s -X POST http://localhost:8080/checkout \
 |-------|--------|
 | **Name** | `HighLatency` |
 | **PromQL** | `histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)) > 0.5` |
-| **Pending** | `for: 2m` |
+| **Pending** | `for: 30s` |
 | **Severity** | `warning` |
 
 **What it means**  
 Estimated p95 request duration for a service is above **0.5 seconds** for at
-least 2 minutes.
+least 30 seconds.
 
 **Possible causes**
 
@@ -209,11 +209,11 @@ docker run --rm -i -v "$PWD/scripts:/scripts" \
   -e SCENARIO=failure -e BASE_URL=http://host.docker.internal:8080 \
   grafana/k6 run /scripts/load-test.js
 
-# Option B — self-stopping loop (40 requests over ~3 minutes)
-for i in $(seq 1 40); do
+# Option B — self-stopping loop (20 requests, fires ~1 minute in)
+for i in $(seq 1 20); do
   curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
     -X POST "http://localhost:8080/slow?seconds=2"
-  sleep 5
+  sleep 2
 done
 ```
 
@@ -226,7 +226,7 @@ watch -n5 'curl -s localhost:9090/api/v1/query \
 
 Expected sequence:
 1. **~30s** of sustained slow traffic → p95 > 0.5s → alert enters **pending**
-2. **~2 minutes** held above threshold → alert enters **firing**
+2. **~30 seconds** held above threshold → alert enters **firing**
 3. Stop the loop → p95 drains over the 5m window → alert returns to **OK**
 
 **First checks**
