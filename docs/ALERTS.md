@@ -93,7 +93,7 @@ lists `ServiceDown`.
 2. Prometheus → **Status → Targets** — is the job red?
 3. `docker compose logs inventory --tail=50`
 4. Dependent health: `curl -s http://localhost:8080/health` (order may show
-   degraded once Person 4 / readiness paths are exercised)
+   degraded once readiness paths are exercised)
 
 **How to confirm recovery**
 
@@ -125,27 +125,35 @@ rate), sustained for 1 minute. `http_errors_total` only counts status ≥ 500
 **Possible causes**
 
 - Downstream timeout / dependency failure returning 502/500
-- Lab-only failure endpoint (Person 4: `/fail`, `/error`, `/dependency-fail`)
+- Lab-only failure endpoints (`/fail`, `/error`, `/dependency-fail`)
 - Bug or overload under stress traffic
 
 **How to reproduce**
 
-Until controlled-failure endpoints land (Person 4), approximate with a stopped
-dependency (checkout returns 5xx and increments errors on order):
+Hit the failure endpoints at a sustained rate for **>1 minute** so the
+2-minute rate window stays above 0.1 req/s of 5xx errors:
 
 ```bash
-docker compose stop inventory
-# generate failing traffic for ~2 minutes
-for i in $(seq 1 30); do
-  curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/checkout \
-    -H 'Content-Type: application/json' \
-    -d '{"items":["SKU-1"],"amount":100}'
-  sleep 2
+# Option A — k6 failure scenario (recommended, drives all four fault endpoints)
+docker run --rm -i -v "$PWD/scripts:/scripts" \
+  -e SCENARIO=failure -e BASE_URL=http://host.docker.internal:8080 \
+  grafana/k6 run /scripts/load-test.js
+
+# Option B — self-stopping loop (40 requests over ~2 minutes)
+for i in $(seq 1 40); do
+  curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
+    -X POST http://localhost:8080/fail
+  sleep 3
 done
 ```
 
-Preferred (after Person 4): hit `/fail` or `/error` under light load until the
-rate stays above 0.1 for 1m.
+Watch the error rate climb:
+```bash
+watch -n5 'curl -s "localhost:9090/api/v1/query?query=sum(rate(http_errors_total[2m]))by(service)" \
+  | python3 -c "import sys,json;[print(r[\"metric\"][\"service\"],round(float(r[\"value\"][1]),3)) for r in json.load(sys.stdin)[\"data\"][\"result\"]]"'
+```
+
+`HighErrorRate` enters **pending** once rate > 0.1, then **firing** after `for: 1m`.
 
 **First checks**
 
@@ -186,16 +194,40 @@ least 2 minutes.
 **Possible causes**
 
 - Slow downstream call or network delay
-- Lab-only `/slow` endpoint (Person 4)
-- Stress load (Person 4 k6 scenario)
+- Lab-only `/slow` endpoint (`/slow?seconds=N`)
+- Stress load (k6 stress or failure scenario)
 
 **How to reproduce**
 
-Preferred after Person 4: call `/slow` repeatedly for >2 minutes, or run the
-stress load-test scenario.
+A **single** slow request is not enough — the alert fires on the p95 across
+all requests in a 5-minute window, sustained for 2 minutes. You need a high
+volume of slow requests for long enough to shift the p95 and hold it there.
 
-Until then, you can still **observe** latency on the Grafana p95 panel under
-normal checkout traffic (values should stay well under 0.5s when healthy).
+```bash
+# Option A — k6 failure scenario (recommended, 3 min of /slow + /fail traffic)
+docker run --rm -i -v "$PWD/scripts:/scripts" \
+  -e SCENARIO=failure -e BASE_URL=http://host.docker.internal:8080 \
+  grafana/k6 run /scripts/load-test.js
+
+# Option B — self-stopping loop (40 requests over ~3 minutes)
+for i in $(seq 1 40); do
+  curl -s -o /dev/null -w "%{http_code} time=%{time_total}s\n" \
+    -X POST "http://localhost:8080/slow?seconds=2"
+  sleep 5
+done
+```
+
+Watch p95 climb in real time:
+```bash
+watch -n5 'curl -s localhost:9090/api/v1/query \
+  --data-urlencode "query=histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,service))" \
+  | python3 -c "import sys,json;[print(r[\"metric\"].get(\"service\"),round(float(r[\"value\"][1]),3)) for r in json.load(sys.stdin)[\"data\"][\"result\"]]"'
+```
+
+Expected sequence:
+1. **~30s** of sustained slow traffic → p95 > 0.5s → alert enters **pending**
+2. **~2 minutes** held above threshold → alert enters **firing**
+3. Stop the loop → p95 drains over the 5m window → alert returns to **OK**
 
 **First checks**
 
