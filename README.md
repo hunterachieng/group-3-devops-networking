@@ -552,16 +552,16 @@ recovery steps: **`docs/ALERTS.md`**. Measured results: **`docs/benchmark-report
 <!-- DEPLOYMENT_RECORD:START -->
 | Field | Value |
 |---|---|
-| Commit | [`e75c5240b9e5ab4b1492d7a6a75992f1e92c1d6b`](https://github.com/hunterachieng/group-3-devops-networking/commit/e75c5240b9e5ab4b1492d7a6a75992f1e92c1d6b) |
-| Image tag | `sha-e75c524` |
-| Run | [29263245881](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29263245881) |
+| Commit | [`6df098a5c4f9692385affa4f4cfa2a2739238a83`](https://github.com/hunterachieng/group-3-devops-networking/commit/6df098a5c4f9692385affa4f4cfa2a2739238a83) |
+| Image tag | `sha-6df098a` |
+| Run | [29361895932](https://github.com/hunterachieng/group-3-devops-networking/actions/runs/29361895932) |
 
 Images published to Docker Hub after each merge to `main`:
 
 ```
-12517282/group-3-devops-networking-order:sha-e75c524
-12517282/group-3-devops-networking-inventory:sha-e75c524
-12517282/group-3-devops-networking-payment:sha-e75c524
+12517282/group-3-devops-networking-order:sha-6df098a
+12517282/group-3-devops-networking-inventory:sha-6df098a
+12517282/group-3-devops-networking-payment:sha-6df098a
 ```
 <!-- DEPLOYMENT_RECORD:END -->
 
@@ -590,7 +590,7 @@ See [.github/workflows/container-ci-cd.yml](.github/workflows/container-ci-cd.ym
 cp .env.example .env
 export DOCKERHUB_USERNAME=12517282
 export APP_NAME=group-3-devops-networking
-./scripts/deploy.sh sha-e75c524
+./scripts/deploy.sh sha-6df098a
 ```
 
 ### Verify after deploy
@@ -600,7 +600,7 @@ Create `.env` with the real values in one command (docker compose reads it autom
 
 ```bash
 cat > .env <<'EOF'
-IMAGE_TAG=sha-e75c524
+IMAGE_TAG=sha-6df098a
 DOCKERHUB_USERNAME=12517282
 APP_NAME=group-3-devops-networking
 EOF
@@ -608,9 +608,9 @@ EOF
 
 ```bash
 # Pull images from Docker Hub
-docker pull 12517282/group-3-devops-networking-order:sha-e75c524
-docker pull 12517282/group-3-devops-networking-inventory:sha-e75c524
-docker pull 12517282/group-3-devops-networking-payment:sha-e75c524
+docker pull 12517282/group-3-devops-networking-order:sha-6df098a
+docker pull 12517282/group-3-devops-networking-inventory:sha-6df098a
+docker pull 12517282/group-3-devops-networking-payment:sha-6df098a
 ```
 
 ```bash
@@ -628,7 +628,7 @@ curl -s -X POST http://localhost:8080/checkout \
 
 ```bash
 # Verify image traceability — labels must show the commit SHA and source repo
-docker image inspect 12517282/group-3-devops-networking-order:sha-e75c524 \
+docker image inspect 12517282/group-3-devops-networking-order:sha-6df098a \
   --format '{{json .Config.Labels}}' | python3 -m json.tool
 ```
 
