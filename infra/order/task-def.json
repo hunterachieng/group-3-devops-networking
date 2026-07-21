@@ -1,0 +1,45 @@
+{
+  "family": "devops-g3-order",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::827478161993:role/devops-g3-execution-role",
+  "taskRoleArn": "arn:aws:iam::827478161993:role/devops-g3-task-role",
+  "containerDefinitions": [
+    {
+      "name": "order",
+      "image": "827478161993.dkr.ecr.us-west-1.amazonaws.com/devops-g3-order:REPLACE_WITH_SHA",
+      "essential": true,
+      "portMappings": [
+        {
+          "name": "order-3001",
+          "containerPort": 3001,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 10
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/devops-g3/order",
+          "awslogs-region": "us-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "tags": [
+    { "key": "Project", "value": "devops-Ecommerce" },
+    { "key": "Group", "value": "group-3" },
+    { "key": "Owner", "value": "order-owner" },
+    { "key": "Environment", "value": "lab" }
+  ]
+}
