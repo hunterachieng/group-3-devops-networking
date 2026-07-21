@@ -14,10 +14,6 @@ a/b/c from the scenario. This matches our existing Compose discovery
 | Service B | inventory | 3002 | no |
 | Service C | payment | 3003 | no |
 
-> Note: Phase 3.1 lists "service-a/b/c" as required Service Connect names. We read
-> that as the generic scenario template and instantiate it with domain names. If
-> the grader is literal about those strings, confirm before Gate 2.
-
 ---
 
 ## Design decision recorded: the payment -> order callback (C -> A)
