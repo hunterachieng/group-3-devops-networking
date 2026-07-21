@@ -1,0 +1,49 @@
+{
+  "family": "devops-g3-inventory",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::827478161993:role/devops-g3-execution-role",
+  "taskRoleArn": "arn:aws:iam::827478161993:role/devops-g3-task-role",
+  "containerDefinitions": [
+    {
+      "name": "inventory",
+      "image": "827478161993.dkr.ecr.us-west-1.amazonaws.com/devops-g3-inventory:IMAGE_SHA",
+      "essential": true,
+      "portMappings": [
+        {
+          "name": "inventory-3002",
+          "containerPort": 3002,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [
+        { "name": "BIND_HOST", "value": "0.0.0.0" },
+        { "name": "SERVICE_PORT", "value": "3002" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3002/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 10
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/devops-g3/inventory",
+          "awslogs-region": "us-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "tags": [
+    { "key": "Project", "value": "devops-Ecommerce" },
+    { "key": "Group", "value": "group-3" },
+    { "key": "Owner", "value": "inventory-owner" },
+    { "key": "Environment", "value": "lab" }
+  ]
+}

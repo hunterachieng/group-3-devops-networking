@@ -41,6 +41,15 @@ init_tracing(app, SERVICE_NAME)
 init_failures(app, SERVICE_NAME, log, log_event, downstream_url=PAYMENT_URL)
 
 
+# Logged at import time, not under `if __name__ == "__main__"`, because gunicorn
+# never executes that block — without this there is no log line in CloudWatch
+# until the first request arrives (Phase 2 checkpoint needs one on startup).
+log_event(log, "service_starting",
+          f"{SERVICE_NAME} starting on {BIND_HOST}:{SERVICE_PORT}",
+          bind=BIND_HOST, port=SERVICE_PORT, downstream=PAYMENT_URL,
+          version=GIT_SHA)
+
+
 def request_id_from(req) -> str:
     return req.headers.get(REQUEST_ID_HEADER) or str(uuid.uuid4())
 
@@ -150,8 +159,4 @@ def server_error(_err):
 
 
 if __name__ == "__main__":
-    log_event(log, "service_starting",
-              f"{SERVICE_NAME} starting on {BIND_HOST}:{SERVICE_PORT}",
-              bind=BIND_HOST, port=SERVICE_PORT, downstream=PAYMENT_URL,
-              version=GIT_SHA)
     app.run(host=BIND_HOST, port=SERVICE_PORT, threaded=True)
