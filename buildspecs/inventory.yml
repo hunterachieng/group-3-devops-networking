@@ -1,0 +1,38 @@
+version: 0.2
+#
+# Required env vars (set in CodeBuild project or pipeline):
+#   AWS_ACCOUNT_ID, AWS_DEFAULT_REGION
+#   ECR_REPO_NAME  = devops-g3-inventory
+#   ECS_SERVICE    = devops-g3-inventory
+#   ECS_CLUSTER    = devops-g3-cluster
+#   CONTAINER_NAME = inventory
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION
+          | docker login --username AWS --password-stdin
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - SHA=$(git rev-parse --short HEAD)
+      - REPO=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME
+      - IMAGE_URI=$REPO:$SHA
+
+  build:
+    commands:
+      - echo Building inventory image for linux/amd64...
+      - docker build --platform linux/amd64
+          --build-arg GIT_SHA=$SHA
+          -t $IMAGE_URI
+          ./inventory
+
+  post_build:
+    commands:
+      - docker push $IMAGE_URI
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI"
+          > imagedefinitions.json
+      - echo Build complete. Image $IMAGE_URI
+
+artifacts:
+  files:
+    - imagedefinitions.json
