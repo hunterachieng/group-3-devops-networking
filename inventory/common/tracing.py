@@ -40,6 +40,9 @@ def init_tracing(app, service_name: str) -> None:
     Call once per service, right after `init_metrics(app, SERVICE_NAME)`:
         init_tracing(app, SERVICE_NAME)
     """
+    if os.getenv("OTEL_SDK_DISABLED", "").lower() == "true":
+        return
+
     if not isinstance(trace.get_tracer_provider(), TracerProvider):
         endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://jaeger:4318") + "/v1/traces"
         provider = TracerProvider(
