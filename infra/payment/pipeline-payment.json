@@ -1,0 +1,93 @@
+{
+    "pipeline": {
+      "name": "devops-g3-payment-pipeline",
+      "roleArn": "arn:aws:iam::827478161993:role/devops-g3-codepipeline-role",
+      "artifactStore": {
+        "type": "S3",
+        "location": "devops-g3-codepipeline-artifacts-827478161993-us-west-1"
+      },
+      "stages": [
+        {
+          "name": "Source",
+          "actions": [
+            {
+              "name": "Source",
+              "actionTypeId": {
+                "category": "Source",
+                "owner": "AWS",
+                "provider": "CodeStarSourceConnection",
+                "version": "1"
+              },
+              "outputArtifacts": [{ "name": "SourceOutput" }],
+              "configuration": {
+                "ConnectionArn": "arn:aws:codeconnections:us-west-1:827478161993:connection/d92ced2b-936a-453d-9828-17f5e9c67e42",
+                "FullRepositoryId": "hunterachieng/group-3-devops-networking",
+                "BranchName": "main",
+                "OutputArtifactFormat": "CODE_ZIP"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Build",
+          "actions": [
+            {
+              "name": "Build",
+              "actionTypeId": {
+                "category": "Build",
+                "owner": "AWS",
+                "provider": "CodeBuild",
+                "version": "1"
+              },
+              "inputArtifacts": [{ "name": "SourceOutput" }],
+              "outputArtifacts": [{ "name": "BuildOutput" }],
+              "configuration": {
+                "ProjectName": "devops-g3-payment-build"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deploy",
+          "actions": [
+            {
+              "name": "Deploy",
+              "actionTypeId": {
+                "category": "Deploy",
+                "owner": "AWS",
+                "provider": "ECS",
+                "version": "1"
+              },
+              "inputArtifacts": [{ "name": "BuildOutput" }],
+              "configuration": {
+                "ClusterName": "devops-g3-cluster",
+                "ServiceName": "devops-g3-payment",
+                "FileName": "imagedefinitions.json"
+              }
+            }
+          ]
+        }
+      ],
+      "pipelineType": "V2",
+      "triggers": [
+        {
+          "providerType": "CodeStarSourceConnection",
+          "gitConfiguration": {
+            "sourceActionName": "Source",
+            "push": [
+              {
+                "branches": { "includes": ["main"] },
+                "filePaths": { "includes": ["payment/**"] }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "tags": [
+      { "key": "Project", "value": "devops-Ecommerce" },
+      { "key": "Group", "value": "group-3" },
+      { "key": "Owner", "value": "payment-owner" },
+      { "key": "Environment", "value": "lab" }
+    ]
+  }
