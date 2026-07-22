@@ -1,37 +1,44 @@
 version: 0.2
 #
-# Required env vars (set in CodeBuild project or pipeline):
-#   AWS_ACCOUNT_ID, AWS_DEFAULT_REGION
-#   ECR_REPO_NAME  = devops-g3-inventory
-#   ECS_SERVICE    = devops-g3-inventory
-#   ECS_CLUSTER    = devops-g3-cluster
-#   CONTAINER_NAME = inventory
+# Inventory service delivery buildspec (Phase 5).
+# Runs in CodeBuild (privileged mode ON) as the Build stage of
+# devops-g3-inventory-pipeline. Source arrives as a CodePipeline zip artifact
+# (no .git), so the commit SHA comes from CODEBUILD_RESOLVED_SOURCE_VERSION,
+# NOT `git rev-parse` (which would fail in the pipeline).
+#
+# Self-contained: account is derived at runtime and region comes from the
+# build environment, so the CodeBuild project needs no extra env config.
+
+env:
+  variables:
+    ECR_REPO: devops-g3-inventory
+    CONTAINER_NAME: inventory
+    SERVICE_DIR: inventory
 
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION
-          | docker login --username AWS --password-stdin
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - SHA=$(git rev-parse --short HEAD)
-      - REPO=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME
+      - AWS_REGION=${AWS_DEFAULT_REGION:-us-west-1}
+      - ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+      - REPO=$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO
+      - SHA=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION:-dev} | cut -c1-7)
       - IMAGE_URI=$REPO:$SHA
+      - echo "Building $CONTAINER_NAME  SHA=$SHA  ->  $IMAGE_URI"
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
 
   build:
     commands:
-      - echo Building inventory image for linux/amd64...
-      - docker build --platform linux/amd64
-          --build-arg GIT_SHA=$SHA
-          -t $IMAGE_URI
-          ./inventory
+      - echo Validating source...
+      - if [ -d "$SERVICE_DIR/tests" ]; then pip install -r $SERVICE_DIR/requirements.txt && python -m pytest $SERVICE_DIR/tests; else python -m py_compile $SERVICE_DIR/app.py; fi
+      - echo Building image for linux/amd64...
+      - docker build --platform linux/amd64 --build-arg GIT_SHA=$SHA -t $IMAGE_URI ./$SERVICE_DIR
 
   post_build:
     commands:
       - docker push $IMAGE_URI
-      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI"
-          > imagedefinitions.json
-      - echo Build complete. Image $IMAGE_URI
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI" > imagedefinitions.json
+      - cat imagedefinitions.json
+      - echo Build complete. Pushed $IMAGE_URI
 
 artifacts:
   files:
