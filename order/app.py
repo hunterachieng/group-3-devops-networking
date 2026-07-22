@@ -29,7 +29,7 @@ from common.failures import init_failures
 SERVICE_NAME = "order-service"
 GIT_SHA = os.environ.get("GIT_SHA", "dev")
 
-# Config via environment — nothing hardcoded. Downstream referenced by name.
+# Config via environment — no values hardcoded. Downstream referenced by name.
 BIND_HOST = os.getenv("BIND_HOST", "0.0.0.0")
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", "3001"))
 INVENTORY_URL = os.getenv("INVENTORY_URL", "http://inventory:3002")
