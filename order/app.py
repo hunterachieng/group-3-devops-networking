@@ -65,7 +65,7 @@ def health():
 
 @app.get("/version")
 def version():
-    return jsonify(service="order", version=GIT_SHA, status="ok", marker="gate3a-hands-off-4"), 200
+    return jsonify(service="order", version=GIT_SHA, status="ok", marker="gate3a-hands-off-5"), 200
 
 
 @app.get("/ready")
