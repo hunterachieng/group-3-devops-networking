@@ -1,0 +1,24 @@
+{
+    "name": "devops-g3-payment-build",
+    "description": "Build, tag, and push the payment service image; emit imagedefinitions.json",
+    "source": {
+      "type": "CODEPIPELINE",
+      "buildspec": "buildspecs/payment.yml"
+    },
+    "artifacts": {
+      "type": "CODEPIPELINE"
+    },
+    "environment": {
+      "type": "LINUX_CONTAINER",
+      "image": "aws/codebuild/standard:7.0",
+      "computeType": "BUILD_GENERAL1_SMALL",
+      "privilegedMode": true
+    },
+    "serviceRole": "arn:aws:iam::827478161993:role/devops-g3-codebuild-role",
+    "tags": [
+      { "key": "Project", "value": "devops-Ecommerce" },
+      { "key": "Group", "value": "group-3" },
+      { "key": "Owner", "value": "payment-owner" },
+      { "key": "Environment", "value": "lab" }
+    ]
+  }
