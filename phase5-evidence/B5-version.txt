@@ -1,0 +1,2 @@
+{"marker":"gate3a-hands-off-5","service":"order","status":"ok","version":"606c058"}
+healthy	draining	healthy	draining

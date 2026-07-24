@@ -1,0 +1,15 @@
+{
+    "active": "arn:aws:ecs:us-west-1:827478161993:task-definition/devops-g3-order:16",
+    "deployments": [
+        {
+            "td": "arn:aws:ecs:us-west-1:827478161993:task-definition/devops-g3-order:16",
+            "rollout": "IN_PROGRESS",
+            "running": 2
+        },
+        {
+            "td": "arn:aws:ecs:us-west-1:827478161993:task-definition/devops-g3-order:14",
+            "rollout": "COMPLETED",
+            "running": 0
+        }
+    ]
+}
