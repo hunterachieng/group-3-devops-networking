@@ -146,7 +146,7 @@ def not_found(_err):
               path=request.path, status=404, outcome="rejected", level=30)
     return jsonify(service=SERVICE_NAME, request_id=rid,
                    error="not found", path=request.path), 404
-
+# inventory app
 
 @app.errorhandler(500)
 def server_error(_err):
