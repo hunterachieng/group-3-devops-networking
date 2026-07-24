@@ -1,0 +1,29 @@
+{
+  "name": "devops-g3-inventory-build",
+  "description": "Phase 5 build for inventory: docker build + push to ECR, emit imagedefinitions.json. Source is fed by CodePipeline, so the project needs no CodeConnections access of its own.",
+  "source": {
+    "type": "CODEPIPELINE",
+    "buildspec": "buildspecs/inventory.yml"
+  },
+  "artifacts": {
+    "type": "CODEPIPELINE"
+  },
+  "environment": {
+    "type": "LINUX_CONTAINER",
+    "image": "aws/codebuild/standard:7.0",
+    "computeType": "BUILD_GENERAL1_SMALL",
+    "privilegedMode": true
+  },
+  "serviceRole": "arn:aws:iam::827478161993:role/devops-g3-codebuild-role",
+  "logsConfig": {
+    "cloudWatchLogs": {
+      "status": "ENABLED"
+    }
+  },
+  "tags": [
+    { "key": "Project", "value": "devops-Ecommerce" },
+    { "key": "Group", "value": "group-3" },
+    { "key": "Owner", "value": "inventory-owner" },
+    { "key": "Environment", "value": "lab" }
+  ]
+}

@@ -254,3 +254,26 @@ repairing. Continues numbering from `PHASE4-INVENTORY.md` (currently at 12).
 | Wrong `CONTAINER_NAME` | Deploy stage fails: the name in `imagedefinitions.json` matches no container |
 | Missing path filter | A merge to `order/` rebuilds and redeploys inventory |
 | `git rev-parse` left in the buildspec | Empty image tag, or the build fails at the tag step |
+
+### 13. create-project denied — user lacks PassConnection on the shared connection
+
+- **Symptom:** `aws codebuild create-project` failed with
+  `OAuthProviderException: User is not authorized to access connection
+  .../d92ced2b-936a-453d-9828-17f5e9c67e42`.
+- **First hypothesis:** the connection was broken or not authorized.
+- **Evidence:** the connection is `AVAILABLE` (verified via `list-connections`) and the
+  `devops-g3-codebuild-role` referenced in the project exists. The caller is
+  `arn:aws:iam::827478161993:user/Joyce`. The failure is about the **calling user**, not
+  the role or the connection: creating a project that references a connection requires
+  the caller to hold `codeconnections:PassConnection` on that ARN, and the connection was
+  created by the platform team so only they had it.
+- **Actual cause:** Track A scoped `codeconnections:UseConnection` onto the CodePipeline
+  role but never granted `PassConnection` to the individual service owners who create the
+  CodeBuild projects.
+- **Repair (platform-owned, not yet applied):** attach `codeconnections:PassConnection`
+  on the g3 connection ARN, scoped to `codebuild.amazonaws.com`, to the owners' users or
+  a shared group. The `create-project` command then succeeds unchanged.
+- **Prevention:** when one team creates a shared CodeConnections connection, grant
+  `PassConnection` to every identity that will create CodeBuild/CodePipeline resources
+  from it, not just `UseConnection` to the service roles. All three owners hit this same
+  wall.

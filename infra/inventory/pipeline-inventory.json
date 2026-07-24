@@ -1,0 +1,95 @@
+{
+  "pipeline": {
+    "name": "devops-g3-inventory-pipeline",
+    "pipelineType": "V2",
+    "roleArn": "arn:aws:iam::827478161993:role/devops-g3-codepipeline-role",
+    "artifactStore": {
+      "type": "S3",
+      "location": "devops-g3-codepipeline-artifacts-827478161993-us-west-1"
+    },
+    "triggers": [
+      {
+        "providerType": "CodeStarSourceConnection",
+        "gitConfiguration": {
+          "sourceActionName": "Source",
+          "push": [
+            {
+              "branches": {
+                "includes": ["main"]
+              },
+              "filePaths": {
+                "includes": ["inventory/**", "buildspecs/inventory.yml"]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "stages": [
+      {
+        "name": "Source",
+        "actions": [
+          {
+            "name": "Source",
+            "actionTypeId": {
+              "category": "Source",
+              "owner": "AWS",
+              "provider": "CodeStarSourceConnection",
+              "version": "1"
+            },
+            "configuration": {
+              "ConnectionArn": "arn:aws:codeconnections:us-west-1:827478161993:connection/d92ced2b-936a-453d-9828-17f5e9c67e42",
+              "FullRepositoryId": "hunterachieng/group-3-devops-networking",
+              "BranchName": "main",
+              "OutputArtifactFormat": "CODE_ZIP",
+              "DetectChanges": "false"
+            },
+            "outputArtifacts": [{ "name": "SourceArtifact" }],
+            "runOrder": 1
+          }
+        ]
+      },
+      {
+        "name": "Build",
+        "actions": [
+          {
+            "name": "Build",
+            "actionTypeId": {
+              "category": "Build",
+              "owner": "AWS",
+              "provider": "CodeBuild",
+              "version": "1"
+            },
+            "configuration": {
+              "ProjectName": "devops-g3-inventory-build"
+            },
+            "inputArtifacts": [{ "name": "SourceArtifact" }],
+            "outputArtifacts": [{ "name": "BuildArtifact" }],
+            "runOrder": 1
+          }
+        ]
+      },
+      {
+        "name": "Deploy",
+        "actions": [
+          {
+            "name": "Deploy",
+            "actionTypeId": {
+              "category": "Deploy",
+              "owner": "AWS",
+              "provider": "ECS",
+              "version": "1"
+            },
+            "configuration": {
+              "ClusterName": "devops-g3-cluster",
+              "ServiceName": "devops-g3-inventory",
+              "FileName": "imagedefinitions.json"
+            },
+            "inputArtifacts": [{ "name": "BuildArtifact" }],
+            "runOrder": 1
+          }
+        ]
+      }
+    ]
+  }
+}
