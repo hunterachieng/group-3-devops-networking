@@ -218,11 +218,17 @@ aws codepipeline get-pipeline-state --name devops-g3-order-pipeline --region $AW
 
 curl -s "http://$ALB_DNS/version"
 ```
-→ `{"marker":"gate3a-hands-off-5","service":"order","status":"ok","version":"19b3e38"}`
-— the `version` changed from the previous SHA with zero manual deploy steps.
+→ `{"marker":"gate3a-hands-off-5","service":"order","status":"ok","version":"41eb453"}`
+— the `version` changed from the previous SHA with zero manual deploy steps. The QA
+run deployed PR **#53** ("feat: test deployment", 3 approvals), which produced SHA
+`41eb453` on task-def `devops-g3-order:14`.
 
-Captured in [phase5-evidence/03-gate3a-version.txt](../phase5-evidence/03-gate3a-version.txt)
-and [phase5-evidence/04-webhook-trigger.txt](../phase5-evidence/04-webhook-trigger.txt).
+Captured in [phase5-evidence/A5-version.txt](../phase5-evidence/A5-version.txt),
+[phase5-evidence/A1-trigger.txt](../phase5-evidence/A1-trigger.txt) (WebhookV2),
+[phase5-evidence/A0-pr.txt](../phase5-evidence/A0-pr.txt) (PR + approvals),
+[phase5-evidence/A3-ecr.txt](../phase5-evidence/A3-ecr.txt) (ECR tag) and
+[phase5-evidence/A6-imagedefs.txt](../phase5-evidence/A6-imagedefs.txt)
+(`[{"name":"order","imageUri":"…/devops-g3-order:41eb453"}]`).
 
 ---
 
@@ -230,7 +236,8 @@ and [phase5-evidence/04-webhook-trigger.txt](../phase5-evidence/04-webhook-trigg
 
 Intentionally break the health check, merge, and watch ECS refuse to finish the rollout.
 
-**The break** — `order/app.py` `/health` temporarily returns 503:
+**The break** — `order/app.py` `/health` temporarily returns 500 (on a short-lived branch
+`gate3b/health-fail`):
 
 ```python
 @app.get("/health")
@@ -238,31 +245,40 @@ def health():
     rid = request_id_from(request)
     log_event(log, "health_check", "health endpoint queried",
               request_id=rid, path="/health", outcome="fail")
-    return jsonify(status="unhealthy", service=SERVICE_NAME, version=GIT_SHA), 503
+    return jsonify(status="unhealthy", service=SERVICE_NAME, version=GIT_SHA), 500
 ```
 
-Merge it. The pipeline builds and deploys the bad revision (task-def `:9`). Then:
+Merge it. The pipeline builds and deploys the bad revision (task-def `:15`). Then:
 
 ```bash
 # new tasks never go healthy: runningCount stays 0 on the bad deployment,
-# while the last good deployment (:8) keeps runningCount 2
+# while the last good deployment (:14) keeps runningCount 2
 aws ecs describe-services --cluster devops-g3-cluster --services devops-g3-order \
   --region $AWS_REGION \
-  --query 'services[0].deployments[].{td:taskDefinition,status:status,rollout:rolloutState,running:runningCount}'
+  --query 'services[0].deployments[].{td:taskDefinition,rollout:rolloutState,reason:rolloutStateReason,running:runningCount,failed:failedTasks}'
 ```
-→ the bad deployment reaches `rolloutState: FAILED`, ECS aborts it, and the good `:8`
-deployment returns to `PRIMARY / COMPLETED / running 2`.
+→ the bad deployment `:15` reaches `rolloutState: FAILED` with reason *"ECS deployment
+circuit breaker: tasks failed to start"* (4 failed tasks), ECS rolls back with *"rolling
+back to deployment ecs-svc/2271940597359048268"*, and the good `:14` deployment returns to
+`PRIMARY / COMPLETED / running 2`.
 
 ```bash
 # the ALB never stopped serving the good version during the failed rollout
 curl -s "http://$ALB_DNS/version"
 ```
-→ still `version: 19b3e38`, status ok — **zero traffic impact**.
+→ still `version: 41eb453`, status ok — the bad `:15` never registered to the ALB.
+
+**User impact** — a `/health` curl loop over the rollout window recorded **994/1013 =
+98.1%** `200`s and 19 momentary `status=000` blips during target-registration churn, with
+**no sustained outage** (`:14` held `running: 2` throughout).
 
 Evidence:
-- [phase5-evidence/05-gate3b-rollback-events.txt](../phase5-evidence/05-gate3b-rollback-events.txt) — ECS circuit-breaker event messages
-- [phase5-evidence/06-gate3b-still-good.txt](../phase5-evidence/06-gate3b-still-good.txt) — ALB `/version` stayed good throughout
-- [phase5-evidence/07-gate3b-pipeline.txt](../phase5-evidence/07-gate3b-pipeline.txt) — pipeline Deploy stage failed
+- [phase5-evidence/B1-deployments.txt](../phase5-evidence/B1-deployments.txt) — `:15` FAILED + circuit-breaker rollback reason
+- [phase5-evidence/B2-events.txt](../phase5-evidence/B2-events.txt) — ECS service events (failed container health checks + rolling back)
+- [phase5-evidence/B3-targets.txt](../phase5-evidence/B3-targets.txt) — good ALB targets stayed healthy
+- [phase5-evidence/B4-restored.txt](../phase5-evidence/B4-restored.txt) — service restored to `:14`
+- [phase5-evidence/B5-version.txt](../phase5-evidence/B5-version.txt) — recovery: `/version` = `41eb453`, targets `healthy healthy`
+- [phase5-evidence/B6-traffic.txt](../phase5-evidence/B6-traffic.txt) — traffic loop (98.1% availability during rollback)
 
 **Restore health after the gate.** Revert `/health` to `200`/`ok`, merge, and the
 pipeline auto-deploys a clean healthy revision:
@@ -280,14 +296,22 @@ def health():
 
 ## 6. Evidence captured
 
-- [x] PR link + approval (Gate 3A)
-- [x] Merge commit SHA (`19b3e38`)
-- [x] Pipeline execution showing `WebhookV2` trigger — `04-webhook-trigger.txt`
-- [x] ALB `/version` returning the merge SHA — `03-gate3a-version.txt`
-- [x] Circuit-breaker rollback events — `05-gate3b-rollback-events.txt`
-- [x] ALB stayed on the good version during rollback — `06-gate3b-still-good.txt`
-- [x] Pipeline Deploy stage failed on the bad revision — `07-gate3b-pipeline.txt`
-- [x] `/health` restored to 200 and re-merged clean
+The QA run (2026-07-24) re-captured everything into `phase5-evidence/` — Gate 3A **9/9**,
+Gate 3B **7/7**.
+
+- [x] PR link + approval — PR #53, 3 approvals (`A0-pr.txt`)
+- [x] Merge commit SHA (`41eb453`)
+- [x] Pipeline execution showing `WebhookV2` trigger — `A1-trigger.txt`
+- [x] CodeBuild built the correct service, SUCCEEDED — `A2-build.txt`
+- [x] SHA-tagged image in ECR — `A3-ecr.txt`
+- [x] `imagedefinitions.json` = `[{"name":"order","imageUri":"…:41eb453"}]` — `A6-imagedefs.txt`
+- [x] New ECS revision `:14` deployed — `A4-deploy.txt`
+- [x] ALB `/version` returning the merge SHA — `A5-version.txt`
+- [x] Circuit-breaker: `:15` FAILED + rollback — `B1-deployments.txt`, `B2-events.txt`
+- [x] ALB stayed on the good version during rollback — `B3-targets.txt`, `B5-version.txt`
+- [x] Restored known-good revision `:14` — `B4-restored.txt`
+- [x] User impact 98.1% during rollback — `B6-traffic.txt`
+- [x] `/health` restored to 200 and re-merged clean — main healthy on SHA `606c058` (`:16`)
 
 ---
 
@@ -297,8 +321,9 @@ def health():
 - [x] Platform prerequisites confirmed (connection AVAILABLE, both roles exist, circuit breaker on)
 - [x] CodeBuild `devops-g3-order-build` created, privileged ON, log group `/aws/codebuild/devops-g3-order`
 - [x] Pipeline `devops-g3-order-pipeline` created (V2, `DetectChanges:true`, no `filePaths` filter)
-- [x] Gate 3A hands-off deploy proven (WebhookV2 → new SHA at ALB `/version`)
-- [x] Gate 3B auto-rollback proven (bad revision aborted, reverted to last good, zero traffic impact)
+- [x] Gate 3A hands-off deploy proven (WebhookV2 → new SHA `41eb453` at ALB `/version`)
+- [x] Gate 3B auto-rollback proven (bad `:15` aborted, reverted to good `:14`, 98.1% availability)
+- [x] `/health` restored, main healthy on SHA `606c058`
 
 ---
 
@@ -379,3 +404,22 @@ Recorded symptom → cause → repair → prevention.
 - **Cause:** firing `start-pipeline-execution` twice in quick succession cancels the older
   run (superseded), and a webhook arriving while a run is `InProgress` can be dropped.
 - **Prevention:** run clean gate tests on an **idle** pipeline, with no manual starts.
+
+### Scar 9 — evidence files are untracked and vanish
+- **Symptom:** the whole `phase5-evidence/` directory came up empty at QA time; every
+  capture from the original gate runs was gone.
+- **Cause:** the evidence files were never committed (untracked / gitignored), so a branch
+  switch / clean wiped them. Gate 3B's ECS **service events** had also scrolled off history
+  after the intervening healthy deploys, so that evidence could not be reconstructed.
+- **Repair:** re-ran both gates from scratch and re-captured to `phase5-evidence/`.
+- **Prevention:** commit evidence immediately, or capture it somewhere tracked — ECS
+  service events are transient (~100 entries) and cannot be recovered later.
+
+### Scar 10 — env vars do not cross terminals
+- **Symptom:** the second-terminal traffic loop returned `status=000` with ~0.003s
+  timings for every request during the rollback test.
+- **Cause:** `ALB_DNS` (and the other session exports) were only set in terminal 1;
+  a new terminal starts with an empty environment, so the loop hit `http:///health`.
+- **Prevention:** re-run the full `export …` session-setup block at the top of **every**
+  new terminal before using `$ALB_DNS`/`$TG_ARN`; `echo "ALB_DNS=$ALB_DNS"` to confirm
+  it is non-empty first.

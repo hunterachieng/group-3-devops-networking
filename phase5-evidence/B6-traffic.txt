@@ -1,0 +1,2027 @@
+09:49:53
+ status=200 time=0.703501
+09:49:55
+ status=200 time=0.541450
+09:49:56
+ status=200 time=0.595553
+09:49:58
+ status=200 time=0.529696
+09:49:59
+ status=200 time=0.625268
+09:50:01
+ status=200 time=0.733899
+09:50:03
+ status=200 time=0.610575
+09:50:04
+ status=200 time=0.535119
+09:50:06
+ status=200 time=0.541499
+09:50:07
+ status=200 time=0.530034
+09:50:09
+ status=200 time=0.544098
+09:50:11
+ status=200 time=0.602482
+09:50:12
+ status=200 time=0.532807
+09:50:14
+ status=200 time=0.714356
+09:50:16
+ status=200 time=0.720692
+09:50:17
+ status=200 time=0.601138
+09:50:19
+ status=200 time=0.544659
+09:50:21
+ status=200 time=0.542582
+09:50:22
+ status=200 time=0.539535
+09:50:24
+ status=200 time=0.529374
+09:50:25
+ status=200 time=0.537772
+09:50:27
+ status=200 time=0.551551
+09:50:28
+ status=200 time=0.587065
+09:50:30
+ status=200 time=0.744670
+09:50:32
+ status=200 time=0.726994
+09:50:34
+ status=200 time=0.542243
+09:50:35
+ status=200 time=0.527132
+09:50:37
+ status=200 time=0.547072
+09:50:38
+ status=200 time=0.621194
+09:50:40
+ status=200 time=0.613099
+09:50:42
+ status=200 time=0.534964
+09:50:43
+ status=200 time=0.661870
+09:50:45
+ status=200 time=0.733784
+09:50:47
+ status=200 time=0.539579
+09:50:48
+ status=200 time=0.536990
+09:50:50
+ status=200 time=0.595708
+09:50:51
+ status=200 time=0.557935
+09:50:53
+ status=200 time=0.572526
+09:50:55
+ status=200 time=0.539104
+09:50:56
+ status=200 time=0.534435
+09:50:58
+ status=200 time=0.660360
+09:50:59
+ status=200 time=0.728011
+09:51:01
+ status=200 time=0.535267
+09:51:03
+ status=200 time=0.544201
+09:51:04
+ status=200 time=0.534589
+09:51:06
+ status=200 time=0.532730
+09:51:08
+ status=200 time=0.542782
+09:51:09
+ status=200 time=0.529504
+09:51:11
+ status=200 time=0.554739
+09:51:13
+ status=200 time=0.768519
+09:51:14
+ status=200 time=0.663966
+09:51:16
+ status=200 time=0.533789
+09:51:18
+ status=200 time=0.539321
+09:51:19
+ status=200 time=0.579173
+09:51:21
+ status=200 time=0.539919
+09:51:22
+ status=200 time=0.533924
+09:51:24
+ status=200 time=0.710865
+09:51:26
+ status=200 time=0.551294
+09:51:27
+ status=200 time=0.702619
+09:51:29
+ status=200 time=0.729091
+09:51:31
+ status=200 time=0.615779
+09:51:33
+ status=200 time=0.683251
+09:51:34
+ status=200 time=0.611593
+09:51:36
+ status=200 time=0.532554
+09:51:38
+ status=200 time=0.532803
+09:51:39
+ status=200 time=0.671923
+09:51:41
+ status=200 time=0.689171
+09:51:43
+ status=200 time=0.724463
+09:51:44
+ status=200 time=0.827836
+09:51:46
+ status=200 time=0.535488
+09:51:48
+ status=200 time=0.535303
+09:51:49
+ status=200 time=0.528515
+09:51:51
+ status=200 time=0.591627
+09:51:53
+ status=200 time=0.542630
+09:51:54
+ status=200 time=0.536357
+09:51:56
+ status=200 time=0.815452
+09:51:58
+ status=200 time=0.742055
+09:51:59
+ status=200 time=0.539720
+09:52:01
+ status=200 time=0.532023
+09:52:02
+ status=200 time=0.530204
+09:52:04
+ status=200 time=0.532747
+09:52:06
+ status=200 time=0.535917
+09:52:07
+ status=200 time=0.539995
+09:52:09
+ status=200 time=0.542487
+09:52:10
+ status=200 time=0.684960
+09:52:12
+ status=200 time=0.843218
+09:52:14
+ status=200 time=0.568946
+09:52:16
+ status=200 time=0.531249
+09:52:17
+ status=200 time=0.535404
+09:52:19
+ status=200 time=0.532898
+09:52:20
+ status=200 time=0.531942
+09:52:22
+ status=200 time=0.532760
+09:52:24
+ status=200 time=0.546970
+09:52:25
+ status=200 time=0.775283
+09:52:27
+ status=200 time=0.723074
+09:52:29
+ status=200 time=0.539979
+09:52:30
+ status=200 time=0.623281
+09:52:32
+ status=200 time=0.721152
+09:52:34
+ status=200 time=0.539288
+09:52:35
+ status=200 time=0.540055
+09:52:37
+ status=200 time=0.543271
+09:52:38
+ status=200 time=0.585847
+09:52:40
+ status=200 time=0.693278
+09:52:42
+ status=200 time=0.634807
+09:52:44
+ status=200 time=0.539321
+09:52:45
+ status=200 time=0.539072
+09:52:47
+ status=200 time=0.530994
+09:52:48
+ status=200 time=0.540895
+09:52:50
+ status=200 time=0.539054
+09:52:51
+ status=200 time=0.536793
+09:52:53
+ status=200 time=0.635309
+09:52:55
+ status=200 time=0.828854
+09:52:57
+ status=200 time=0.536571
+09:52:58
+ status=200 time=0.533369
+09:53:00
+ status=200 time=0.531795
+09:53:01
+ status=200 time=0.575024
+09:53:03
+ status=200 time=0.532238
+09:53:05
+ status=200 time=0.546171
+09:53:06
+ status=200 time=0.544390
+09:53:08
+ status=200 time=0.541820
+09:53:09
+ status=200 time=0.736925
+09:53:11
+ status=200 time=0.580766
+09:53:13
+ status=200 time=0.539253
+09:53:14
+ status=200 time=0.790050
+09:53:16
+ status=200 time=0.530820
+09:53:18
+ status=200 time=0.534710
+09:53:19
+ status=200 time=0.545679
+09:53:21
+ status=200 time=0.565357
+09:53:22
+ status=200 time=0.607847
+09:53:24
+ status=200 time=0.759490
+09:53:26
+ status=200 time=0.627941
+09:53:28
+ status=200 time=0.545166
+09:53:29
+ status=200 time=0.542134
+09:53:31
+ status=200 time=0.541502
+09:53:32
+ status=200 time=0.539889
+09:53:34
+ status=200 time=0.528032
+09:53:36
+ status=200 time=0.637368
+09:53:37
+ status=200 time=0.559841
+09:53:39
+ status=200 time=0.733722
+09:53:41
+ status=200 time=0.550711
+09:53:42
+ status=200 time=0.687496
+09:53:44
+ status=200 time=0.533069
+09:53:46
+ status=200 time=0.530879
+09:53:47
+ status=200 time=0.540411
+09:53:49
+ status=200 time=0.532297
+09:53:50
+ status=200 time=0.529852
+09:53:52
+ status=200 time=0.575291
+09:53:53
+ status=200 time=0.791729
+09:53:55
+ status=200 time=0.543264
+09:53:57
+ status=200 time=0.538444
+09:53:58
+ status=200 time=0.540948
+09:54:00
+ status=200 time=0.546268
+09:54:02
+ status=200 time=0.540679
+09:54:03
+ status=200 time=0.537038
+09:54:05
+ status=200 time=0.534792
+09:54:06
+ status=200 time=0.543264
+09:54:08
+ status=200 time=0.752792
+09:54:10
+ status=200 time=0.578030
+09:54:11
+ status=200 time=0.545048
+09:54:13
+ status=200 time=0.598184
+09:54:15
+ status=200 time=0.538997
+09:54:16
+ status=200 time=0.532451
+09:54:18
+ status=200 time=0.545921
+09:54:19
+ status=200 time=0.530959
+09:54:21
+ status=200 time=0.570626
+09:54:23
+ status=200 time=0.867662
+09:54:24
+ status=200 time=0.583638
+09:54:26
+ status=200 time=0.584442
+09:54:28
+ status=200 time=0.537292
+09:54:29
+ status=200 time=0.538303
+09:54:31
+ status=200 time=0.650947
+09:54:33
+ status=200 time=0.548512
+09:54:34
+ status=200 time=0.745058
+09:54:36
+ status=200 time=0.728431
+09:54:38
+ status=200 time=0.733000
+09:54:40
+ status=200 time=0.541431
+09:54:41
+ status=200 time=0.540502
+09:54:43
+ status=200 time=0.538959
+09:54:44
+ status=200 time=0.644376
+09:54:46
+ status=200 time=0.652990
+09:54:48
+ status=200 time=0.768971
+09:54:49
+ status=200 time=0.829214
+09:54:51
+ status=200 time=0.734816
+09:54:53
+ status=200 time=0.641771
+09:54:55
+ status=200 time=0.543412
+09:54:56
+ status=200 time=0.544814
+09:54:58
+ status=200 time=0.542184
+09:55:00
+ status=200 time=0.531813
+09:55:01
+ status=200 time=0.533631
+09:55:03
+ status=200 time=0.534325
+09:55:04
+ status=200 time=0.541331
+09:55:06
+ status=200 time=0.836372
+09:55:08
+ status=200 time=0.657513
+09:55:09
+ status=200 time=0.802619
+09:55:11
+ status=200 time=0.529116
+09:55:13
+ status=200 time=0.537337
+09:55:14
+ status=200 time=0.535554
+09:55:16
+ status=200 time=0.531624
+09:55:18
+ status=200 time=0.545672
+09:55:19
+ status=200 time=0.579535
+09:55:21
+ status=200 time=0.779629
+09:55:23
+ status=200 time=0.587661
+09:55:24
+ status=200 time=0.708604
+09:55:26
+ status=200 time=0.544076
+09:55:28
+ status=200 time=0.542998
+09:55:29
+ status=200 time=0.641148
+09:55:31
+ status=200 time=0.798848
+09:55:33
+ status=200 time=0.533085
+09:55:34
+ status=200 time=0.535605
+09:55:36
+ status=200 time=0.696251
+09:55:38
+ status=200 time=0.596220
+09:55:39
+ status=200 time=0.537719
+09:55:41
+ status=200 time=0.531812
+09:55:42
+ status=200 time=0.535754
+09:55:44
+ status=200 time=0.555610
+09:55:46
+ status=200 time=0.538341
+09:55:47
+ status=200 time=0.569594
+09:55:49
+ status=200 time=0.607491
+09:55:50
+ status=200 time=0.726452
+09:55:52
+ status=200 time=0.592180
+09:55:54
+ status=200 time=0.542544
+09:55:55
+ status=200 time=0.532235
+09:55:57
+ status=200 time=0.531046
+09:55:59
+ status=200 time=0.538424
+09:56:00
+ status=200 time=0.699710
+09:56:02
+ status=200 time=0.796736
+09:56:04
+ status=200 time=0.765920
+09:56:06
+ status=200 time=0.728720
+09:56:07
+ status=200 time=0.548224
+09:56:09
+ status=200 time=0.542489
+09:56:11
+ status=200 time=0.540847
+09:56:12
+ status=200 time=0.736879
+09:56:14
+ status=200 time=0.542150
+09:56:16
+ status=200 time=0.686768
+09:56:17
+ status=200 time=0.618503
+09:56:19
+ status=200 time=0.751843
+09:56:21
+ status=200 time=0.576863
+09:56:22
+ status=200 time=0.535564
+09:56:24
+ status=200 time=0.534274
+09:56:25
+ status=200 time=0.538802
+09:56:27
+ status=200 time=0.588156
+09:56:29
+ status=200 time=0.531413
+09:56:30
+ status=200 time=0.536874
+09:56:32
+ status=200 time=0.538350
+09:56:33
+ status=200 time=0.739495
+09:56:35
+ status=200 time=0.644614
+09:56:37
+ status=200 time=0.536357
+09:56:38
+ status=200 time=0.536217
+09:56:40
+ status=200 time=0.531299
+09:56:42
+ status=200 time=0.529451
+09:56:43
+ status=200 time=0.601518
+09:56:45
+ status=200 time=0.541721
+09:56:46
+ status=200 time=0.544264
+09:56:48
+ status=200 time=0.746427
+09:56:50
+ status=200 time=0.621278
+09:56:51
+ status=200 time=0.804552
+09:56:53
+ status=200 time=0.531140
+09:56:55
+ status=200 time=0.725358
+09:56:57
+ status=200 time=0.832692
+09:56:59
+ status=200 time=0.529332
+09:57:00
+ status=200 time=0.719722
+09:57:02
+ status=200 time=0.593538
+09:57:03
+ status=200 time=0.731583
+09:57:05
+ status=200 time=0.537940
+09:57:07
+ status=200 time=0.534986
+09:57:08
+ status=200 time=0.530287
+09:57:10
+ status=200 time=0.696072
+09:57:12
+ status=200 time=0.534084
+09:57:14
+ status=200 time=0.542451
+09:57:15
+ status=200 time=0.535102
+09:57:17
+ status=200 time=0.772987
+09:57:19
+ status=200 time=0.738574
+09:57:20
+ status=200 time=0.538828
+09:57:22
+ status=200 time=0.540035
+09:57:24
+ status=200 time=0.613957
+09:57:25
+ status=200 time=0.546061
+09:57:27
+ status=200 time=0.529639
+09:57:28
+ status=200 time=0.542260
+09:57:30
+ status=200 time=0.678726
+09:57:32
+ status=200 time=0.839451
+09:57:34
+ status=200 time=0.660723
+09:57:35
+ status=200 time=0.531132
+09:57:37
+ status=200 time=0.544587
+09:57:38
+ status=200 time=0.533915
+09:57:40
+ status=200 time=0.529693
+09:57:42
+ status=200 time=0.532213
+09:57:43
+ status=200 time=0.559195
+09:57:45
+ status=200 time=0.569210
+09:57:46
+ status=200 time=0.784653
+09:57:48
+ status=200 time=0.664830
+09:57:50
+ status=200 time=0.539813
+09:57:51
+ status=200 time=0.534853
+09:57:53
+ status=200 time=0.554642
+09:57:55
+ status=200 time=0.531768
+09:57:56
+ status=200 time=0.589575
+09:57:58
+ status=200 time=0.532420
+09:57:59
+ status=200 time=0.537883
+09:58:01
+ status=200 time=0.735402
+09:58:03
+ status=200 time=0.582497
+09:58:04
+ status=200 time=0.540268
+09:58:06
+ status=200 time=0.630547
+09:58:08
+ status=200 time=0.531778
+09:58:09
+ status=200 time=0.539569
+09:58:11
+ status=200 time=0.541003
+09:58:13
+ status=200 time=0.528624
+09:58:14
+ status=200 time=0.857127
+09:58:16
+ status=200 time=0.730007
+09:58:18
+ status=200 time=0.546427
+09:58:19
+ status=200 time=0.535378
+09:58:21
+ status=200 time=0.840181
+09:58:23
+ status=200 time=0.543365
+09:58:25
+ status=200 time=0.700385
+09:58:26
+ status=200 time=0.531108
+09:58:28
+ status=200 time=0.533160
+09:58:29
+ status=200 time=0.798312
+09:58:31
+ status=200 time=0.734377
+09:58:33
+ status=200 time=0.600172
+09:58:35
+ status=200 time=0.541624
+09:58:36
+ status=200 time=0.541037
+09:58:38
+ status=200 time=0.540996
+09:58:39
+ status=200 time=0.577427
+09:58:41
+ status=200 time=0.527429
+09:58:43
+ status=200 time=0.534226
+09:58:44
+ status=200 time=0.679852
+09:58:46
+ status=200 time=0.717839
+09:58:48
+ status=200 time=0.662717
+09:58:49
+ status=200 time=0.530288
+09:58:51
+ status=200 time=0.681461
+09:58:53
+ status=200 time=0.543760
+09:58:54
+ status=200 time=0.547868
+09:58:56
+ status=200 time=0.538450
+09:58:57
+ status=200 time=0.538109
+09:58:59
+ status=200 time=0.716928
+09:59:01
+ status=200 time=0.736549
+09:59:03
+ status=200 time=0.531995
+09:59:04
+ status=200 time=0.530492
+09:59:06
+ status=200 time=0.531067
+09:59:07
+ status=200 time=0.543084
+09:59:09
+ status=200 time=0.629656
+09:59:11
+ status=200 time=0.540599
+09:59:12
+ status=200 time=0.532975
+09:59:14
+ status=200 time=0.870516
+09:59:16
+ status=200 time=0.647567
+09:59:17
+ status=200 time=0.708090
+09:59:19
+ status=200 time=0.534962
+09:59:21
+ status=200 time=0.532149
+09:59:22
+ status=200 time=0.538730
+09:59:24
+ status=200 time=0.530285
+09:59:26
+ status=200 time=0.529170
+09:59:27
+ status=200 time=0.636749
+09:59:29
+ status=200 time=0.803559
+09:59:31
+ status=200 time=0.579466
+09:59:32
+ status=200 time=0.540309
+09:59:34
+ status=200 time=0.667104
+09:59:36
+ status=200 time=0.545371
+09:59:37
+ status=200 time=0.536461
+09:59:39
+ status=200 time=0.682583
+09:59:40
+ status=200 time=0.534702
+09:59:42
+ status=200 time=0.640390
+09:59:44
+ status=200 time=0.742829
+09:59:45
+ status=200 time=0.532521
+09:59:47
+ status=200 time=0.558871
+09:59:49
+ status=200 time=0.532029
+09:59:50
+ status=200 time=0.534480
+09:59:52
+ status=200 time=0.536931
+09:59:53
+ status=200 time=0.600372
+09:59:55
+ status=200 time=0.527830
+09:59:57
+ status=200 time=0.675180
+09:59:58
+ status=200 time=0.733076
+10:00:00
+ status=200 time=0.559501
+10:00:02
+ status=200 time=0.541987
+10:00:03
+ status=200 time=0.540067
+10:00:05
+ status=200 time=0.533498
+10:00:06
+ status=200 time=0.542626
+10:00:08
+ status=200 time=0.541740
+10:00:10
+ status=200 time=0.532807
+10:00:11
+ status=200 time=0.726544
+10:00:13
+ status=200 time=0.728375
+10:00:15
+ status=200 time=0.538660
+10:00:16
+ status=200 time=0.551841
+10:00:18
+ status=200 time=0.530935
+10:00:19
+ status=200 time=0.700230
+10:00:21
+ status=200 time=0.528930
+10:00:23
+ status=200 time=0.741558
+10:00:25
+ status=200 time=0.541603
+10:00:26
+ status=200 time=0.750829
+10:00:28
+ status=200 time=0.734782
+10:00:30
+ status=200 time=0.702704
+10:00:31
+ status=200 time=0.798879
+10:00:33
+ status=200 time=0.538671
+10:00:35
+ status=200 time=0.537240
+10:00:37
+ status=200 time=0.536711
+10:00:38
+ status=200 time=0.717180
+10:00:40
+ status=200 time=0.580041
+10:00:42
+ status=200 time=0.808475
+10:00:43
+ status=200 time=0.573424
+10:00:45
+ status=200 time=0.533954
+10:00:47
+ status=200 time=0.534413
+10:00:48
+ status=200 time=0.547220
+10:00:50
+ status=200 time=0.540921
+10:00:51
+ status=200 time=0.541101
+10:00:53
+ status=200 time=0.681350
+10:00:55
+ status=200 time=0.617573
+10:00:56
+ status=200 time=0.684031
+10:00:58
+ status=200 time=0.557965
+10:01:00
+ status=200 time=0.536700
+10:01:01
+ status=200 time=0.664739
+10:01:03
+ status=200 time=0.860783
+10:01:05
+ status=200 time=0.777332
+10:01:07
+ status=200 time=0.530397
+10:01:08
+ status=200 time=0.534104
+10:01:10
+ status=200 time=0.724019
+10:01:12
+ status=200 time=0.729984
+10:01:13
+ status=200 time=0.733793
+10:01:15
+ status=200 time=0.539833
+10:01:17
+ status=200 time=0.540397
+10:01:18
+ status=200 time=0.537386
+10:01:20
+ status=200 time=0.538484
+10:01:22
+ status=200 time=0.534731
+10:01:23
+ status=200 time=0.591596
+10:01:25
+ status=200 time=0.746295
+10:01:27
+ status=200 time=0.632581
+10:01:28
+ status=200 time=0.531742
+10:01:30
+ status=200 time=0.784503
+10:01:32
+ status=200 time=0.541440
+10:01:33
+ status=200 time=0.538083
+10:01:35
+ status=200 time=0.539238
+10:01:36
+ status=200 time=0.547545
+10:01:38
+ status=200 time=0.549047
+10:01:40
+ status=200 time=0.756513
+10:01:41
+ status=200 time=0.565943
+10:01:43
+ status=200 time=0.543033
+10:01:45
+ status=200 time=0.531535
+10:01:46
+ status=200 time=0.530333
+10:01:48
+ status=200 time=0.540814
+10:01:49
+ status=200 time=0.545216
+10:01:51
+ status=200 time=0.538765
+10:01:52
+ status=200 time=0.531957
+10:01:54
+ status=200 time=0.723821
+10:01:56
+ status=200 time=0.639503
+10:01:58
+ status=200 time=0.541710
+10:01:59
+ status=200 time=0.607473
+10:02:01
+ status=200 time=0.552392
+10:02:02
+ status=200 time=0.538377
+10:02:04
+ status=200 time=0.537619
+10:02:06
+ status=200 time=0.533536
+10:02:07
+ status=200 time=0.593802
+10:02:09
+ status=200 time=0.682899
+10:02:10
+ status=200 time=0.850509
+10:02:12
+ status=200 time=0.530458
+10:02:14
+ status=200 time=0.696296
+10:02:16
+ status=200 time=0.665778
+10:02:17
+ status=200 time=0.540712
+10:02:19
+ status=200 time=0.585713
+10:02:21
+ status=200 time=0.547949
+10:02:22
+ status=200 time=0.728493
+10:02:24
+ status=200 time=0.726566
+10:02:26
+ status=200 time=0.590635
+10:02:27
+ status=200 time=0.542215
+10:02:29
+ status=200 time=0.546285
+10:02:31
+ status=200 time=0.675385
+10:02:32
+ status=200 time=0.546429
+10:02:34
+ status=200 time=0.543363
+10:02:36
+ status=200 time=0.542574
+10:02:37
+ status=200 time=0.534416
+10:02:39
+ status=200 time=0.705977
+10:02:40
+ status=200 time=0.595752
+10:02:42
+ status=200 time=0.537847
+10:02:44
+ status=200 time=0.543075
+10:02:45
+ status=200 time=0.534376
+10:02:47
+ status=200 time=0.601964
+10:02:49
+ status=200 time=0.531376
+10:02:50
+ status=200 time=0.706550
+10:02:52
+ status=200 time=0.679632
+10:02:54
+ status=200 time=0.717204
+10:02:55
+ status=200 time=0.545934
+10:02:57
+ status=200 time=0.655137
+10:02:59
+ status=200 time=0.540850
+10:03:00
+ status=200 time=0.542250
+10:03:02
+ status=200 time=0.538770
+10:03:03
+ status=200 time=0.546605
+10:03:05
+ status=200 time=0.538506
+10:03:07
+ status=200 time=0.666756
+10:03:08
+ status=200 time=0.734825
+10:03:10
+ status=200 time=0.563726
+10:03:12
+ status=200 time=0.538885
+10:03:13
+ status=200 time=0.552231
+10:03:15
+ status=200 time=0.529065
+10:03:16
+ status=200 time=0.531263
+10:03:18
+ status=200 time=0.530413
+10:03:19
+ status=200 time=0.530540
+10:03:21
+ status=200 time=0.631106
+10:03:23
+ status=200 time=0.743421
+10:03:24
+ status=200 time=0.537702
+10:03:26
+ status=200 time=0.554936
+10:03:28
+ status=200 time=0.550239
+10:03:29
+ status=200 time=0.534351
+10:03:31
+ status=200 time=0.539044
+10:03:32
+ status=200 time=0.542970
+10:03:34
+ status=200 time=0.591924
+10:03:36
+ status=200 time=0.679688
+10:03:37
+ status=200 time=0.733865
+10:03:39
+ status=200 time=0.531366
+10:03:41
+ status=200 time=0.543591
+10:03:42
+ status=200 time=0.544095
+10:03:44
+ status=200 time=0.541246
+10:03:45
+ status=200 time=0.540143
+10:03:47
+ status=200 time=0.538330
+10:03:49
+ status=200 time=0.540367
+10:03:50
+ status=200 time=0.826633
+10:03:52
+ status=200 time=0.720412
+10:03:54
+ status=200 time=0.541429
+10:03:55
+ status=200 time=0.530390
+10:03:57
+ status=200 time=0.540883
+10:03:59
+ status=200 time=0.532962
+10:04:00
+ status=200 time=0.530211
+10:04:02
+ status=200 time=0.540333
+10:04:03
+ status=200 time=0.537889
+10:04:05
+ status=200 time=0.763731
+10:04:07
+ status=200 time=0.725745
+10:04:08
+ status=200 time=0.544175
+10:04:10
+ status=200 time=0.532008
+10:04:12
+ status=200 time=0.531926
+10:04:13
+ status=200 time=0.534482
+10:04:15
+ status=200 time=0.539225
+10:04:16
+ status=200 time=0.544175
+10:04:18
+ status=200 time=0.541322
+10:04:20
+ status=200 time=0.659074
+10:04:21
+ status=200 time=0.723648
+10:04:23
+ status=200 time=0.531543
+10:04:25
+ status=200 time=0.571259
+10:04:26
+ status=200 time=0.542721
+10:04:28
+ status=200 time=0.537447
+10:04:29
+ status=200 time=0.536308
+10:04:31
+ status=200 time=0.581886
+10:04:33
+ status=200 time=0.534094
+10:04:34
+ status=200 time=0.669169
+10:04:36
+ status=200 time=0.727587
+10:04:38
+ status=200 time=0.541961
+10:04:39
+ status=200 time=0.647943
+10:04:41
+ status=200 time=0.546579
+10:04:43
+ status=200 time=0.542989
+10:04:44
+ status=200 time=0.528584
+10:04:46
+ status=200 time=0.544762
+10:04:47
+ status=200 time=0.535608
+10:04:49
+ status=200 time=0.690238
+10:04:51
+ status=200 time=0.724253
+10:04:52
+ status=200 time=0.560974
+10:04:54
+ status=200 time=0.548432
+10:04:56
+ status=200 time=0.536670
+10:04:57
+ status=200 time=0.608903
+10:04:59
+ status=200 time=0.544742
+10:05:00
+ status=200 time=0.550039
+10:05:02
+ status=200 time=0.549935
+10:05:04
+ status=200 time=0.770687
+10:05:05
+ status=200 time=0.665451
+10:05:07
+ status=200 time=0.545180
+10:05:09
+ status=200 time=0.528354
+10:05:10
+ status=200 time=0.542333
+10:05:12
+ status=200 time=0.531546
+10:05:14
+ status=200 time=0.531183
+10:05:15
+ status=200 time=0.541246
+10:05:17
+ status=200 time=0.540294
+10:05:18
+ status=200 time=0.808068
+10:05:20
+ status=200 time=0.644131
+10:05:22
+ status=200 time=0.536408
+10:05:23
+ status=200 time=0.533021
+10:05:25
+ status=200 time=0.534473
+10:05:27
+ status=200 time=0.539493
+10:05:28
+ status=200 time=0.537910
+10:05:30
+ status=200 time=0.535534
+10:05:31
+ status=200 time=0.573115
+10:05:33
+ status=200 time=0.815637
+10:05:35
+ status=200 time=0.646403
+10:05:37
+ status=200 time=0.545811
+10:05:38
+ status=200 time=0.536240
+10:05:40
+ status=200 time=0.633873
+10:05:41
+ status=200 time=0.534442
+10:05:43
+ status=200 time=0.530773
+10:05:45
+ status=200 time=0.526421
+10:05:46
+ status=200 time=0.561568
+10:05:48
+ status=200 time=0.710968
+10:05:50
+ status=200 time=0.627822
+10:05:51
+ status=200 time=0.542880
+10:05:53
+ status=200 time=0.736082
+10:05:55
+ status=200 time=0.538195
+10:05:56
+ status=200 time=0.529456
+10:05:58
+ status=200 time=0.627016
+10:05:59
+ status=200 time=0.536892
+10:06:01
+ status=200 time=0.599329
+10:06:03
+ status=200 time=0.785053
+10:06:05
+ status=200 time=0.544923
+10:06:06
+ status=200 time=0.584216
+10:06:08
+ status=200 time=0.614715
+10:06:09
+ status=200 time=0.533233
+10:06:11
+ status=200 time=0.544291
+10:06:13
+ status=200 time=0.535780
+10:06:14
+ status=200 time=0.533391
+10:06:16
+ status=200 time=0.559153
+10:06:18
+ status=200 time=0.713697
+10:06:19
+ status=200 time=0.655743
+10:06:21
+ status=200 time=0.793055
+10:06:23
+ status=200 time=0.841100
+10:06:25
+ status=200 time=0.531629
+10:06:26
+ status=200 time=0.529599
+10:06:28
+ status=200 time=0.530083
+10:06:29
+ status=200 time=0.532007
+10:06:31
+ status=200 time=0.800603
+10:06:33
+ status=200 time=0.721331
+10:06:35
+ status=200 time=0.650775
+10:06:36
+ status=200 time=0.544903
+10:06:38
+ status=200 time=0.540018
+10:06:40
+ status=200 time=0.548779
+10:06:41
+ status=200 time=0.531052
+10:06:43
+ status=200 time=0.542520
+10:06:44
+ status=200 time=0.605014
+10:06:46
+ status=200 time=0.715488
+10:06:48
+ status=200 time=0.590431
+10:06:49
+ status=200 time=0.602830
+10:06:51
+ status=200 time=0.604044
+10:06:53
+ status=200 time=0.531401
+10:06:54
+ status=200 time=0.536827
+10:06:56
+ status=200 time=0.537795
+10:06:57
+ status=200 time=0.541291
+10:06:59
+ status=200 time=0.556420
+10:07:01
+ status=200 time=0.757756
+10:07:02
+ status=200 time=0.575671
+10:07:04
+ status=200 time=0.532015
+10:07:06
+ status=200 time=0.816931
+10:07:07
+ status=200 time=0.541379
+10:07:09
+ status=200 time=0.533445
+10:07:11
+ status=200 time=0.533585
+10:07:12
+ status=200 time=0.609325
+10:07:14
+ status=200 time=0.736280
+10:07:16
+ status=200 time=0.720430
+10:07:17
+ status=200 time=0.595242
+10:07:19
+ status=200 time=0.667191
+10:07:21
+ status=200 time=0.534738
+10:07:22
+ status=200 time=0.598320
+10:07:24
+ status=200 time=0.569012
+10:07:26
+ status=200 time=0.544641
+10:07:27
+ status=200 time=0.673407
+10:07:29
+ status=200 time=0.716539
+10:07:31
+ status=200 time=0.728787
+10:07:32
+ status=200 time=0.540904
+10:07:34
+ status=200 time=0.645834
+10:07:36
+ status=200 time=0.537976
+10:07:37
+ status=200 time=0.531935
+10:07:39
+ status=200 time=0.689490
+10:07:41
+ status=200 time=0.538377
+10:07:42
+ status=200 time=0.542973
+10:07:44
+ status=200 time=0.819610
+10:07:46
+ status=200 time=0.735272
+10:07:47
+ status=200 time=0.533827
+10:07:49
+ status=200 time=0.546163
+10:07:51
+ status=200 time=0.542837
+10:07:52
+ status=200 time=0.541198
+10:07:54
+ status=200 time=0.543249
+10:07:55
+ status=200 time=0.541215
+10:07:57
+ status=200 time=0.796023
+10:07:59
+ status=200 time=0.727161
+10:08:01
+ status=200 time=0.734476
+10:08:02
+ status=200 time=0.592718
+10:08:04
+ status=200 time=0.774120
+10:08:06
+ status=200 time=0.875552
+10:08:08
+ status=200 time=0.536061
+10:08:09
+ status=200 time=0.560625
+10:08:11
+ status=200 time=0.533291
+10:08:13
+ status=200 time=0.668126
+10:08:14
+ status=200 time=0.728876
+10:08:16
+ status=200 time=0.546729
+10:08:18
+ status=200 time=0.535851
+10:08:19
+ status=200 time=0.541586
+10:08:21
+ status=200 time=0.542628
+10:08:23
+ status=200 time=0.647206
+10:08:24
+ status=200 time=0.759354
+10:08:26
+ status=200 time=0.527841
+10:08:28
+ status=200 time=0.725765
+10:08:29
+ status=200 time=0.658575
+10:08:31
+ status=200 time=0.535413
+10:08:33
+ status=200 time=0.636499
+10:08:34
+ status=200 time=0.542456
+10:08:36
+ status=200 time=0.544407
+10:08:38
+ status=200 time=0.542419
+10:08:39
+ status=200 time=0.539442
+10:08:41
+ status=200 time=0.534591
+10:08:42
+ status=200 time=0.702584
+10:08:44
+ status=200 time=0.656679
+10:08:46
+ status=200 time=0.716485
+10:08:48
+ status=200 time=0.660296
+10:08:49
+ status=200 time=0.608044
+10:08:51
+ status=200 time=0.544064
+10:08:53
+ status=200 time=0.532183
+10:08:54
+ status=200 time=0.578732
+10:08:56
+ status=200 time=0.551006
+10:08:57
+ status=200 time=0.711604
+10:08:59
+ status=200 time=0.562999
+10:09:01
+ status=200 time=0.727554
+10:09:03
+ status=200 time=0.530708
+10:09:04
+ status=200 time=0.534124
+10:09:06
+ status=200 time=0.851948
+10:09:08
+ status=200 time=0.532544
+10:09:09
+ status=200 time=0.539592
+10:09:11
+ status=200 time=0.669624
+10:09:13
+ status=200 time=0.716288
+10:09:15
+ status=200 time=0.541379
+10:09:16
+ status=200 time=0.541684
+10:09:18
+ status=200 time=0.544171
+10:09:19
+ status=200 time=0.533916
+10:09:21
+ status=200 time=0.789638
+10:09:23
+ status=200 time=0.538066
+10:09:25
+ status=200 time=0.527928
+10:09:26
+ status=200 time=0.782591
+10:09:28
+ status=200 time=0.722414
+10:09:30
+ status=200 time=0.533069
+10:09:31
+ status=200 time=0.531991
+10:09:33
+ status=200 time=0.532860
+10:09:34
+ status=200 time=0.532745
+10:09:36
+ status=200 time=0.543130
+10:09:38
+ status=200 time=0.541078
+10:09:39
+ status=200 time=0.773526
+10:09:41
+ status=200 time=0.792446
+10:09:43
+ status=200 time=0.653546
+10:09:45
+ status=200 time=0.535187
+10:09:46
+ status=200 time=0.541247
+10:09:48
+ status=200 time=0.528623
+10:09:49
+ status=200 time=0.533945
+10:09:51
+ status=200 time=0.783190
+10:09:53
+ status=200 time=0.799338
+10:09:55
+ status=200 time=0.599464
+10:09:56
+ status=200 time=0.791314
+10:09:58
+ status=200 time=0.544405
+10:10:00
+ status=200 time=0.563838
+10:10:01
+ status=200 time=0.544448
+10:10:03
+ status=200 time=0.533322
+10:10:04
+ status=200 time=0.539975
+10:10:06
+ status=200 time=0.535077
+10:10:08
+ status=200 time=0.532304
+10:10:09
+ status=200 time=0.556744
+10:10:11
+ status=200 time=0.708298
+10:10:13
+ status=200 time=0.591022
+10:10:15
+ status=200 time=0.535310
+10:10:16
+ status=200 time=0.594519
+10:10:18
+ status=200 time=0.543866
+10:10:19
+ status=200 time=0.547050
+10:10:21
+ status=200 time=0.539534
+10:10:23
+ status=200 time=0.533161
+10:10:24
+ status=200 time=0.676935
+10:10:26
+ status=200 time=0.729990
+10:10:28
+ status=200 time=0.528259
+10:10:29
+ status=200 time=0.529331
+10:10:31
+ status=200 time=0.533961
+10:10:32
+ status=200 time=0.531306
+10:10:34
+ status=200 time=0.529131
+10:10:36
+ status=200 time=0.540250
+10:10:37
+ status=200 time=0.531572
+10:10:39
+ status=200 time=0.734996
+10:10:41
+ status=200 time=0.741780
+10:10:42
+ status=200 time=0.532368
+10:10:44
+ status=200 time=0.535677
+10:10:45
+ status=200 time=0.534630
+10:10:47
+ status=200 time=0.850942
+10:10:49
+ status=200 time=0.555174
+10:10:51
+ status=200 time=0.534334
+10:10:52
+ status=200 time=0.608911
+10:10:54
+ status=200 time=0.733015
+10:10:56
+ status=200 time=0.725185
+10:10:57
+ status=200 time=0.541628
+10:10:59
+ status=200 time=0.570753
+10:11:01
+ status=200 time=0.537167
+10:11:02
+ status=200 time=0.538562
+10:11:04
+ status=200 time=0.533955
+10:11:05
+ status=200 time=0.539145
+10:11:07
+ status=200 time=0.649239
+10:11:09
+ status=200 time=0.725187
+10:11:10
+ status=200 time=0.627812
+10:11:12
+ status=200 time=0.529035
+10:11:14
+ status=200 time=0.529227
+10:11:15
+ status=200 time=0.539196
+10:11:17
+ status=200 time=0.531595
+10:11:18
+ status=200 time=0.531688
+10:11:20
+ status=200 time=0.530608
+10:11:22
+ status=200 time=0.535087
+10:11:23
+ status=200 time=0.752654
+10:11:25
+ status=200 time=0.729685
+10:11:27
+ status=200 time=0.533740
+10:11:28
+ status=200 time=0.540388
+10:11:30
+ status=200 time=0.532447
+10:11:31
+ status=200 time=0.539018
+10:11:33
+ status=200 time=0.538819
+10:11:35
+ status=200 time=0.546904
+10:11:36
+ status=200 time=0.529996
+10:11:38
+ status=200 time=0.799894
+10:11:40
+ status=200 time=0.725898
+10:11:41
+ status=200 time=0.571212
+10:11:43
+ status=200 time=0.532018
+10:11:45
+ status=200 time=0.541807
+10:11:46
+ status=200 time=0.540140
+10:11:48
+ status=200 time=0.698184
+10:11:49
+ status=200 time=0.537935
+10:11:51
+ status=200 time=0.717362
+10:11:53
+ status=200 time=0.774348
+10:11:55
+ status=200 time=0.636741
+10:11:56
+ status=200 time=0.529947
+10:11:58
+ status=200 time=0.533659
+10:11:59
+ status=200 time=0.633806
+10:12:01
+ status=200 time=0.544109
+10:12:03
+ status=200 time=0.701778
+10:12:05
+ status=200 time=0.536282
+10:12:06
+ status=200 time=0.588819
+10:12:08
+ status=200 time=0.765253
+10:12:10
+ status=200 time=0.571746
+10:12:11
+ status=200 time=0.539611
+10:12:13
+ status=200 time=0.532074
+10:12:14
+ status=200 time=0.545185
+10:12:16
+ status=200 time=0.534400
+10:12:18
+ status=200 time=0.535861
+10:12:19
+ status=200 time=0.539276
+10:12:21
+ status=200 time=0.850856
+10:12:23
+ status=200 time=0.684972
+10:12:25
+ status=200 time=0.550560
+10:12:26
+ status=200 time=0.531468
+10:12:28
+ status=200 time=0.533696
+10:12:29
+ status=200 time=0.532692
+10:12:31
+ status=200 time=0.538485
+10:12:33
+ status=200 time=0.538633
+10:12:34
+ status=200 time=0.532242
+10:12:36
+ status=200 time=0.695599
+10:12:37
+ status=200 time=0.739926
+10:12:39
+ status=200 time=0.540497
+10:12:41
+ status=200 time=0.534298
+10:12:42
+ status=200 time=0.538197
+10:12:44
+ status=200 time=0.546171
+10:12:45
+ status=200 time=0.543205
+10:12:47
+ status=200 time=0.530133
+10:12:49
+ status=200 time=0.540813
+10:12:50
+ status=200 time=1.378571
+10:12:53
+ status=200 time=0.743201
+10:12:54
+ status=200 time=0.540176
+10:12:56
+ status=200 time=0.530652
+10:12:57
+ status=200 time=0.592610
+10:12:59
+ status=200 time=0.541330
+10:13:01
+ status=200 time=0.536323
+10:13:02
+ status=200 time=0.557859
+10:13:04
+ status=200 time=0.542720
+10:13:05
+ status=200 time=0.795759
+10:13:07
+ status=200 time=0.748134
+10:13:09
+ status=200 time=0.533074
+10:13:11
+ status=200 time=0.543287
+10:13:12
+ status=200 time=0.541480
+10:13:14
+ status=200 time=0.530286
+10:13:15
+ status=200 time=0.546624
+10:13:17
+ status=200 time=0.532516
+10:13:19
+ status=200 time=0.531204
+10:13:20
+ status=200 time=0.789129
+10:13:22
+ status=200 time=0.666980
+10:13:24
+ status=200 time=0.539051
+10:13:25
+ status=200 time=0.530470
+10:13:27
+ status=200 time=0.536900
+10:13:28
+ status=200 time=0.564499
+10:13:30
+ status=200 time=0.661659
+10:13:32
+ status=200 time=0.538801
+10:13:33
+ status=200 time=0.539104
+10:13:35
+ status=200 time=0.719396
+10:13:37
+ status=200 time=0.693134
+10:13:38
+ status=200 time=0.544007
+10:13:40
+ status=200 time=0.533427
+10:13:41
+ status=200 time=0.540810
+10:13:43
+ status=200 time=0.538239
+10:13:45
+ status=200 time=0.530851
+10:13:46
+ status=200 time=0.544054
+10:13:48
+ status=200 time=0.554528
+10:13:49
+ status=200 time=0.690290
+10:13:51
+ status=200 time=0.729022
+10:13:53
+ status=200 time=0.533972
+10:13:54
+ status=200 time=0.534949
+10:13:56
+ status=200 time=0.537567
+10:13:58
+ status=200 time=0.544054
+10:13:59
+ status=200 time=0.534899
+10:14:01
+ status=200 time=0.533845
+10:14:02
+ status=200 time=0.620022
+10:14:04
+ status=200 time=0.812764
+10:14:06
+ status=200 time=0.534094
+10:14:07
+ status=200 time=0.538640
+10:14:09
+ status=200 time=0.535305
+10:14:11
+ status=200 time=0.573692
+10:14:12
+ status=200 time=0.528887
+10:14:14
+ status=200 time=0.539552
+10:14:16
+ status=200 time=0.537134
+10:14:17
+ status=200 time=1.615368
+10:14:20
+ status=200 time=0.743422
+10:14:22
+ status=200 time=0.536415
+10:14:23
+ status=200 time=0.533553
+10:14:25
+ status=200 time=0.608912
+10:14:26
+ status=200 time=0.528616
+10:14:28
+ status=000 time=5.001644
+10:14:34
+ status=000 time=5.003317
+10:14:40
+ status=000 time=5.005009
+10:14:46
+ status=000 time=5.005335
+10:14:52
+ status=000 time=5.005396
+10:14:58
+ status=000 time=5.001339
+10:15:04
+ status=000 time=5.005728
+10:15:10
+ status=000 time=5.005353
+10:15:16
+ status=000 time=5.006005
+10:15:22
+ status=000 time=5.005348
+10:15:28
+ status=000 time=5.001516
+10:15:34
+ status=000 time=5.001415
+10:15:41
+ status=000 time=5.005739
+10:15:47
+ status=000 time=5.004812
+10:15:53
+ status=000 time=5.003031
+10:15:59
+ status=000 time=5.001372
+10:16:05
+ status=000 time=5.005604
+10:16:11
+ status=000 time=5.005536
+10:16:17
+ status=000 time=5.005457
+10:16:23
+ status=200 time=0.531574
+10:16:25
+ status=200 time=0.547000
+10:16:27
+ status=200 time=0.545052
+10:16:28
+ status=200 time=0.672652
+10:16:30
+ status=200 time=0.736593
+10:16:32
+ status=200 time=0.601850
+10:16:33
+ status=200 time=0.533408
+10:16:35
+ status=200 time=0.531981
+10:16:36
+ status=200 time=0.535764
+10:16:38
+ status=200 time=0.538263
+10:16:40
+ status=200 time=0.533049
+10:16:41
+ status=200 time=0.662155
+10:16:43
+ status=200 time=0.620244
+10:16:44
+ status=200 time=0.694629
+10:16:46
+ status=200 time=0.606994
+10:16:48
+ status=200 time=0.527532
+10:16:49
+ status=200 time=0.539846
+10:16:51
+ status=200 time=0.541759
+10:16:53
+ status=200 time=0.555953
+10:16:54
+ status=200 time=0.546496
+10:16:56
+ status=200 time=0.532492
+10:16:57
+ status=200 time=0.670601
+10:16:59
+ status=200 time=0.749954
+10:17:01
+ status=200 time=0.617391
+10:17:02
+ status=200 time=0.534409
+10:17:04
+ status=200 time=0.541926
+10:17:06
+ status=200 time=0.531377
+10:17:07
+ status=200 time=0.543312
+10:17:09
+ status=200 time=0.532489
+10:17:10
+ status=200 time=0.535492
+10:17:12
+ status=200 time=0.681220
+10:17:14
+ status=200 time=0.705909
+10:17:16
+ status=200 time=0.532738
+10:17:17
+ status=200 time=0.540633
+10:17:19
+ status=200 time=0.569961
+10:17:20
+ status=200 time=0.532311
+10:17:22
+ status=200 time=0.542744
+10:17:24
+ status=200 time=0.530804
+10:17:25
+ status=200 time=0.532713
+10:17:27
+ status=200 time=0.810243
+10:17:29
+ status=200 time=0.727962
+10:17:30
+ status=200 time=0.535369
+10:17:32
+ status=200 time=0.542154
+10:17:34
+ status=200 time=0.530579
+10:17:35
+ status=200 time=0.533852
+10:17:37
+ status=200 time=0.548557
+10:17:38
+ status=200 time=0.542643
+10:17:40
+ status=200 time=0.542712
+10:17:41
+ status=200 time=0.744809
+10:17:43
+ status=200 time=0.740503
+10:17:45
+ status=200 time=0.541634
+10:17:47
+ status=200 time=0.535425
+10:17:48
+ status=200 time=0.532071
+10:17:50
+ status=200 time=0.529378
+10:17:51
+ status=200 time=0.541185
+10:17:53
+ status=200 time=0.535346
+10:17:54
+ status=200 time=0.537629
+10:17:56
+ status=200 time=0.779605
+10:17:58
+ status=200 time=0.722751
+10:18:00
+ status=200 time=0.530012
+10:18:01
+ status=200 time=0.549400
+10:18:03
+ status=200 time=0.540774
+10:18:04
+ status=200 time=0.538560
+10:18:06
+ status=200 time=0.532824
+10:18:08
+ status=200 time=0.536541
+10:18:09
+ status=200 time=0.528812
+10:18:11
+ status=200 time=0.725328
+10:18:13
+ status=200 time=0.677642
+10:18:15
+ status=200 time=0.542851
+10:18:16
+ status=200 time=0.575071
+10:18:18
+ status=200 time=0.532472
+10:18:19
+ status=200 time=0.559335
+10:18:21
+ status=200 time=0.528816
+10:18:23
+ status=200 time=0.532199
+10:18:24
+ status=200 time=0.543907
+10:18:26
+ status=200 time=0.815842
+10:18:28
+ status=200 time=0.654861
+10:18:29
+ status=200 time=0.534850
+10:18:31
+ status=200 time=0.544255
+10:18:32
+ status=200 time=0.543738
+10:18:34
+ status=200 time=0.531812
+10:18:36
+ status=200 time=0.548313
+10:18:37
+ status=200 time=0.541713
+10:18:39
+ status=200 time=0.536434
+10:18:40
+ status=200 time=0.696001
+10:18:42
+ status=200 time=0.730717
+10:18:44
+ status=200 time=0.533341
+10:18:45
+ status=200 time=0.544774
+10:18:47
+ status=200 time=0.697284
+10:18:49
+ status=200 time=0.574195
+10:18:50
+ status=200 time=0.542112
+10:18:52
+ status=200 time=0.536495
+10:18:54
+ status=200 time=0.604602
+10:18:55
+ status=200 time=0.687450
+10:18:57
+ status=200 time=0.568808
+10:18:59
+ status=200 time=0.540520
+10:19:00
+ status=200 time=0.542964
+10:19:02
+ status=200 time=0.532346
+10:19:03
+ status=200 time=0.533121
+10:19:05

@@ -1,0 +1,5 @@
+{"approved":3,"mergedAt":"2026-07-24T08:45:49Z","number":53,"title":"feat: test deployment"}
+{"approved":2,"mergedAt":"2026-07-24T08:21:11Z","number":52,"title":"feat: phase 5 pipeline records and delivery runbook"}
+{"approved":2,"mergedAt":"2026-07-24T08:21:26Z","number":51,"title":"fix: phase 5 and docs"}
+{"approved":2,"mergedAt":"2026-07-23T19:43:22Z","number":50,"title":"payment: trivial change to prove path-filtered pipeline trigger"}
+{"approved":2,"mergedAt":"2026-07-23T15:40:00Z","number":49,"title":"fix(order): restore healthy /health after GATE3B rollback test"}

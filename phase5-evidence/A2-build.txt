@@ -1,0 +1,5 @@
+{
+    "status": "SUCCEEDED",
+    "source": null,
+    "ended": "2026-07-24T11:46:33.975000+03:00"
+}
