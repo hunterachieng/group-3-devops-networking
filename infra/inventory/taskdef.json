@@ -21,7 +21,8 @@
       ],
       "environment": [
         { "name": "BIND_HOST", "value": "0.0.0.0" },
-        { "name": "SERVICE_PORT", "value": "3002" }
+        { "name": "SERVICE_PORT", "value": "3002" },
+        { "name": "OTEL_SDK_DISABLED", "value": "true" }
       ],
       "healthCheck": {
         "command": ["CMD-SHELL", "curl -f http://localhost:3002/health || exit 1"],
