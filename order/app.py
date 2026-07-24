@@ -58,9 +58,11 @@ def order_id_from(req) -> str:
 @app.get("/health")
 def health():
     rid = request_id_from(request)
+    # GATE3B: intentional bad revision — /health returns 500 to trigger the ECS
+    # deployment circuit breaker and prove automatic rollback. REVERT AFTER THE TEST.
     log_event(log, "health_check", "health endpoint queried",
-              request_id=rid, path="/health", outcome="ok")
-    return jsonify(status="ok", service=SERVICE_NAME, version=GIT_SHA), 200
+              request_id=rid, path="/health", outcome="fail")
+    return jsonify(status="unhealthy", service=SERVICE_NAME, version=GIT_SHA), 500
 
 
 @app.get("/version")
