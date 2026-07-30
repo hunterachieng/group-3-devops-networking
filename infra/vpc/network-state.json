@@ -1,0 +1,37 @@
+{
+  "region": "us-west-1",
+  "account": "827478161993",
+  "vpcId": "vpc-037dbe66e621f6f13",
+  "privateSubnets": {
+    "devops-g3-private-us-west-1a": {
+      "subnetId": "subnet-00276e31b96224308",
+      "cidr": "172.31.100.0/24",
+      "az": "us-west-1a"
+    },
+    "devops-g3-private-us-west-1c": {
+      "subnetId": "subnet-08917cfb0bc03f01f",
+      "cidr": "172.31.101.0/24",
+      "az": "us-west-1c"
+    }
+  },
+  "publicSubnets": {
+    "us-west-1a": "subnet-0780a6a8bf1120301",
+    "us-west-1c": "subnet-05505b0c5d0b340fd"
+  },
+  "natGatewayId": "nat-0dc5e7e21ddbb5a76",
+  "natGatewayPublicIp": "52.53.85.176",
+  "privateRouteTableId": "rtb-0dfcf9a1e8988b52a",
+  "servicesMovedToPrivate": ["devops-g3-inventory", "devops-g3-payment"],
+  "assignPublicIp": "DISABLED",
+  "inventoryTask": {
+    "privateIp": "172.31.100.87",
+    "publicIp": null,
+    "subnetId": "subnet-00276e31b96224308"
+  },
+  "paymentTask": {
+    "privateIp": "172.31.100.99",
+    "publicIp": null,
+    "subnetId": "subnet-00276e31b96224308"
+  },
+  "completedAt": "2026-07-30T10:55:48Z"
+}
