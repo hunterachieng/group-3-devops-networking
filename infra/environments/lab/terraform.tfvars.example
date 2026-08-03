@@ -1,0 +1,4 @@
+# Example variable values for the lab workload.
+# Copy this to a local .tfvars file if needed, but do not commit secret tfvars.
+# Image tags must be immutable Git SHA tags, never "latest".
+
