@@ -1,4 +1,10 @@
-// Terraform version and provider constraints for the bootstrap stack.
-// This stack creates the remote state backend resources only.
-// Later this file will pin Terraform and the AWS provider versions.
+terraform {
+  required_version = ">= 1.11, < 2.0"
 
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "= 6.56.0"
+    }
+  }
+}

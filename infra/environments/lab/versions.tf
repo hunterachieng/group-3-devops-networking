@@ -1,4 +1,10 @@
-// Terraform version and AWS provider constraints for the lab workload environment.
-// This should match the group-approved pinned versions.
-// The lock file should be committed after terraform init.
+terraform {
+  required_version = ">= 1.11, < 2.0"
 
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "= 6.56.0"
+    }
+  }
+}
