@@ -22,3 +22,13 @@ output "image" {
   description = "Full image URI deployed by this service."
   value       = local.image
 }
+
+output "assign_public_ip" {
+  description = "Whether tasks receive public IPs. Must be false for private services."
+  value       = var.assign_public_ip
+}
+
+output "ingress_rule_count" {
+  description = "Number of security-group ingress rules defined for this service."
+  value       = length(var.ingress_rules)
+}

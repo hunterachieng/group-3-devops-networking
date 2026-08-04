@@ -23,3 +23,8 @@ output "order_target_group_arn" {
   value       = aws_lb_target_group.order.arn
   depends_on  = [aws_lb_listener.http]
 }
+
+output "order_target_group_target_type" {
+  description = "Target group registration type (must be ip for Fargate awsvpc networking)."
+  value       = aws_lb_target_group.order.target_type
+}
