@@ -443,6 +443,33 @@ infra/tests/
 └── architecture.tftest.hcl
 ```
 
+## 15a. Predicted Broken Dependency Edges (service owners)
+
+Three failure predictions, one per service owner. Each is expressed as:
+**symptom → AWS evidence → root cause → architecture test that prevents it.**
+
+### Prediction A — ALB cannot reach Order (owner: Hunter)
+
+**Setup:** `devops-g3-iac-alb-sg → devops-g3-iac-order-sg` ingress rule on port 3001 is missing or misconfigured.
+
+| Field | Detail |
+|-------|--------|
+| Symptom | All requests via the ALB return no response or time out; `curl http://$ALB_DNS/health` hangs until `curl: (28) Operation timed out`. ALB target group shows targets `unhealthy` with reason `Target.Timeout`. |
+| AWS evidence | `aws elbv2 describe-target-health` → `TargetHealth.Reason: Target.Timeout` (not `Connection refused` — the app is alive; packets are dropped by the SG). `aws ec2 describe-security-groups` on `devops-g3-iac-order-sg` shows no inbound rule from `devops-g3-iac-alb-sg` on port 3001. |
+| Root cause | The SG-reference rule `alb-sg → order-sg:3001` is absent. ECS tasks are healthy and running; the application is serving; the network fence is the sole blocker. |
+| Real evidence | Reproduced in Phase 4 §4.2 (console lab): revoking `alb-sg → order-sg:3001` caused `Target.Timeout` across the whole window while order logs showed `health endpoint queried … outcome: ok` throughout — the app never had a problem. |
+| Prevention | Architecture test: assert that `devops-g3-iac-order-sg` has an inbound rule sourced from `devops-g3-iac-alb-sg` on port 3001. In Terraform: `precondition` or `.tftest.hcl` checking the SG rule exists. |
+
+### Prediction B — Order cannot reach Inventory (owner: Joyce)
+
+*(to be filled by Joyce)*
+
+### Prediction C — Inventory cannot reach Payment (owner: Wairimu)
+
+*(to be filled by Wairimu)*
+
+---
+
 ## 16. Architecture Tests
 
 The environment will include architecture rules as code.
@@ -566,14 +593,14 @@ Each card answers: What risk are we reducing? What trade-off are we accepting? W
 | Pillar | Security |
 | Evidence | `assign_public_ip = false`; ENI `PublicIp: null`; internet curl to task IP fails |
 
-### Card 3 — Security-group references (owner: Lwam)
+### Card 3 — Security-group references (owner: Hunter)
 
 | Question | Answer |
 |----------|--------|
-| Risk reduced | Stale IP allowlists when ECS replaces tasks; overly broad `0.0.0.0/0` on app ports |
-| Trade-off | Every allowed hop must be modeled explicitly as SG → SG rules |
-| Pillar | Security |
-| Evidence | SG matrix in §12; runtime Gate 2 trio; architecture tests on A→B, B→C, A→C |
+| Risk reduced | Two risks: (1) stale IP allowlists — ECS Fargate replaces tasks on new IPs with every rolling deploy; a CIDR rule written for the old task IP silently allows or breaks traffic after replacement. (2) Overly broad `0.0.0.0/0` on app ports — any host in the VPC or on the internet could reach services directly, bypassing the ALB and the A→B→C chain. |
+| Trade-off | Every permitted hop must be modeled explicitly as an SG-reference rule (source SG → destination SG); there is no wildcard shortcut. Adding a new hop requires a new rule. |
+| Pillar | Security (least-privilege network access) + Reliability (rules stay correct across task replacements) |
+| Evidence | SG matrix in §12 shows only SG-reference rules — no IP CIDRs on app ports. In the console lab (Phase 4 §4.2), removing the `alb-sg → order-sg:3001` rule produced `Target.Timeout` (packets silently dropped) while the app remained healthy — proving SG rules are the sole gate. Architecture tests assert A→B and B→C rules exist and A→C is absent. |
 
 ### Card 4 — Immutable Git SHA (owner: Minage)
 

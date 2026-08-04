@@ -1,0 +1,22 @@
+# Gate 2 — Service Connect allow/deny evidence (namespace group3.internal)
+# Cluster devops-g3-iac-cluster | region us-west-1 | 2026-08-04
+# SGs: order sg-01df35d3d4d45e6ae | inventory sg-0271101ffd19f4d95 | payment sg-0cb3980ac0c44b94e | alb sg-0e87c3ed51b121ff8
+
+## A->B ALLOW (order task 3062760d8b79496fade985e2887f92bb)
+$ curl -s http://inventory:3002/health
+{"service":"inventory-service","status":"ok","version":"41eb453"}
+$ curl -s http://inventory:3002/version
+{"service":"inventory","status":"ok","version":"41eb453"}
+
+## B->C ALLOW (inventory task 0d3873664a2047288982780ab0b6afb6)
+$ curl -s http://payment:3003/health
+{"service":"payment-service","status":"ok","version":"f16e6ef"}
+$ curl -s http://payment:3003/version
+{"service":"payment","status":"ok","version":"f16e6ef"}
+
+## A->C DENY (order task 3062760d8b79496fade985e2887f92bb)
+$ curl -s http://payment:3003/health
+upstream request timeout
+$ curl -s http://payment:3003/version
+upstream request timeout
+# payment healthy 1/1 => intentional SG deny, not outage

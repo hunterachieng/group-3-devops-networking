@@ -1,0 +1,45 @@
+name: Terraform
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+
+jobs:
+  terraform:
+    name: fmt / validate / test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+
+      # Check formatting across the entire infra tree
+      - name: fmt check
+        run: terraform fmt -check -recursive infra/
+
+      # Init without connecting to the S3 backend — downloads provider plugins only
+      - name: init
+        working-directory: infra/environments/lab
+        run: terraform init -backend=false
+
+      # Static validation — catches config errors without AWS credentials
+      - name: validate
+        working-directory: infra/environments/lab
+        run: terraform validate
+
+      # Full test suite:
+      #   architecture.tftest.hcl          — input-validation rules (no creds needed)
+      #   architecture_structural.tftest.hcl — structural rules via mock_provider (no creds needed)
+      - name: test
+        working-directory: infra/environments/lab
+        run: terraform test -test-directory=tests
