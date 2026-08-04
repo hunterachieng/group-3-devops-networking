@@ -118,14 +118,16 @@ Terraform VPC: 10.30.0.0/16
 
 The environment will use at least two Availability Zones.
 
+**Availability Zones in `us-west-1`:** This region provides **`us-west-1a`** and **`us-west-1c`** only (there is no `us-west-1b`). Subnet names use `-a` / `-c` suffixes to match the AZ.
+
 We will create two public subnets and two private app subnets.
 
 | Subnet name | AZ | CIDR | Purpose |
 |---|---|---|---|
 | `devops-g3-iac-public-a` | `us-west-1a` | `10.30.0.0/24` | ALB |
-| `devops-g3-iac-public-b` | `us-west-1b` | `10.30.1.0/24` | ALB |
+| `devops-g3-iac-public-c` | `us-west-1c` | `10.30.1.0/24` | ALB |
 | `devops-g3-iac-app-a` | `us-west-1a` | `10.30.10.0/24` | ECS Fargate tasks |
-| `devops-g3-iac-app-b` | `us-west-1b` | `10.30.11.0/24` | ECS Fargate tasks |
+| `devops-g3-iac-app-c` | `us-west-1c` | `10.30.11.0/24` | ECS Fargate tasks |
 
 Fargate uses `awsvpc` networking:
 
@@ -303,7 +305,17 @@ The bootstrap stack creates an S3 bucket with:
 - versioning enabled;
 - encryption enabled;
 - public access blocked;
-- S3 lockfile state locking enabled.
+- S3 lockfile state locking enabled (`use_lockfile = true`, no DynamoDB table).
+
+**Implemented (Minage):**
+
+| Item | Value |
+|------|-------|
+| Bucket | `devops-g3-tfstate-827478161993-uswest1` |
+| Bootstrap stack | `infra/bootstrap/` (local state for bucket only) |
+| Workload backend | `infra/environments/lab/backend.tf` |
+| State key | `workload/lab/terraform.tfstate` |
+| Locking | S3 native lockfile |
 
 The workload environment will use:
 
@@ -474,12 +486,22 @@ After apply, the environment must prove:
 
 ## 19. Immediate Next Step
 
-This document and the Terraform skeleton should be reviewed before real workload resources are added.
+Gate 1 design items below should be peer-reviewed before the first **workload** `terraform apply`.
 
-After review, implementation should start in this order:
+**Platform progress (Minage):**
+
+| Step | Status |
+|------|--------|
+| Bootstrap S3 bucket | Done |
+| Lab remote backend + init | Done |
+| Release model + SHA validation | Done — see `docs/TERRAFORM-RELEASE.md` |
+| Network / ALB / ECS modules | Pending — Lwam |
+| Lab `main.tf` wiring | Pending — after modules |
+
+After review, implementation should continue in this order:
 
 ```text
-1. bootstrap stack
+1. bootstrap stack                    ✅
 2. network module
 3. ALB module
 4. ECS platform module
@@ -488,3 +510,81 @@ After review, implementation should start in this order:
 7. architecture tests
 8. runtime evidence
 ```
+
+## 20. Architecture Decision Cards
+
+Each card answers: What risk are we reducing? What trade-off are we accepting? Which Well-Architected pillar? What evidence proves it works?
+
+### Card 1 — Two Availability Zones (owner: Lwam)
+
+| Question | Answer |
+|----------|--------|
+| Risk reduced | Single-AZ outage removes all Order tasks or ALB capacity in one zone |
+| Trade-off | More subnets, endpoints, and cross-AZ traffic to manage |
+| Pillar | Reliability |
+| Evidence | Order `desired_count = 2` with tasks in `us-west-1a` and `us-west-1c`; ALB spans both public subnets |
+
+### Card 2 — Private Fargate tasks (owner: Lwam)
+
+| Question | Answer |
+|----------|--------|
+| Risk reduced | Direct internet reachability to application ports on tasks |
+| Trade-off | Requires VPC endpoints (or NAT) for ECR, Logs, STS; no public IP for outbound internet |
+| Pillar | Security |
+| Evidence | `assign_public_ip = false`; ENI `PublicIp: null`; internet curl to task IP fails |
+
+### Card 3 — Security-group references (owner: Lwam)
+
+| Question | Answer |
+|----------|--------|
+| Risk reduced | Stale IP allowlists when ECS replaces tasks; overly broad `0.0.0.0/0` on app ports |
+| Trade-off | Every allowed hop must be modeled explicitly as SG → SG rules |
+| Pillar | Security |
+| Evidence | SG matrix in §12; runtime Gate 2 trio; architecture tests on A→B, B→C, A→C |
+
+### Card 4 — Immutable Git SHA (owner: Minage)
+
+See full card in `docs/TERRAFORM-RELEASE.md` §7.
+
+| Question | Answer |
+|----------|--------|
+| Risk reduced | Untraceable deploys; `latest` tag drift |
+| Trade-off | Every release requires IaC variable update + plan/apply |
+| Pillar | Operational Excellence |
+| Evidence | `variables.tf` rejects `latest`; ALB `/health` shows deployed SHA |
+
+### Card 5 — Remote, versioned, locked state (owner: Minage)
+
+| Question | Answer |
+|----------|--------|
+| Risk reduced | Lost or divergent local state; concurrent applies corrupting infrastructure; no team-wide source of truth |
+| Trade-off | Bootstrap S3 bucket must be maintained separately; bootstrap uses local state once; IAM permissions for state bucket access |
+| Pillar | Operational Excellence |
+| Evidence | State object at `s3://devops-g3-tfstate-827478161993-uswest1/workload/lab/terraform.tfstate`; bucket versioning enabled; `terraform plan` prints `Releasing state lock`; workload destroy leaves bucket intact; `.terraform.lock.hcl` committed for provider pin |
+
+**Prevention encoded in repo:**
+
+- Separate `infra/bootstrap/` stack excluded from workload destroy
+- `backend.tf` with `encrypt = true` and `use_lockfile = true`
+- `.gitignore` blocks `*.tfstate` and `*.tfvars` (not example)
+- Pinned Terraform `>= 1.11` and AWS provider `= 6.56.0`
+
+## 21. Gate 1 Peer Review Checklist
+
+Review before first workload `terraform apply`:
+
+- [ ] Subnet AZs use `us-west-1a` and `us-west-1c` (not `1b`)
+- [ ] VPC CIDR `10.30.0.0/16` does not overlap default VPC `172.31.0.0/16`
+- [ ] All IaC names use `devops-g3-iac-*` prefix
+- [ ] SG matrix matches assignment traffic contract (§12)
+- [ ] S3 gateway endpoint included in egress design (§8)
+- [ ] Bootstrap bucket survives workload destroy (§13)
+- [ ] Five architecture decision cards complete (§20)
+- [ ] Three predicted failure scenarios documented (service owners)
+- [ ] Service Connect namespace coexistence verified (§11)
+
+**Peer review sign-off:**
+
+| Reviewer | Date | Approved |
+|----------|------|----------|
+| | | ⬜ |

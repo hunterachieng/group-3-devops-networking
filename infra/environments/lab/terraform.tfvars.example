@@ -1,4 +1,22 @@
-# Example variable values for the lab workload.
-# Copy this to a local .tfvars file if needed, but do not commit secret tfvars.
-# Image tags must be immutable Git SHA tags, never "latest".
+region      = "us-west-1"
+environment = "lab"
+name_prefix = "devops-g3-iac"
 
+common_tags = {
+  project     = "devops-g3"
+  group       = "group-3"
+  owner       = "group-3"
+  environment = "lab"
+}
+
+# ---------------------------------------------------------------------------
+# Local setup (do not commit terraform.tfvars):
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# Image tags: immutable Git SHAs only (7-40 hex chars). "latest" is rejected.
+# Use REPLACE_ME until the first push to devops-g3-iac-* ECR repos.
+# Example after a build: order_image_tag = "09823d5"
+# ---------------------------------------------------------------------------
+order_image_tag     = "REPLACE_ME"
+inventory_image_tag = "REPLACE_ME"
+payment_image_tag   = "REPLACE_ME"

@@ -14,3 +14,19 @@ __pycache__/
 .env
 .env.local
 .env.*.local
+
+# Terraform — never commit state, plans, or local cache
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Local variable files (may hold sensitive values)
+*.tfvars
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
