@@ -3,6 +3,18 @@
 #   terraform test
 # or:
 #   terraform test -test-directory=tests
+#
+# mock_provider replaces the real AWS provider so these tests run without
+# credentials in CI. expect_failures tests fail at variable validation before
+# any provider call; the positive plan test needs mock_data to avoid invalid
+# JSON on aws_iam_policy_document.
+mock_provider "aws" {
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}"
+    }
+  }
+}
 
 run "reject_latest_order_image_tag" {
   command = plan
