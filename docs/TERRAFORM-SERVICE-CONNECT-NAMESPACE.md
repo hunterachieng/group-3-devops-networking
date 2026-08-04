@@ -18,18 +18,20 @@ This note explains how the Terraform namespace should safely coexist with the ol
 
 ## Current decision
 
-Terraform creates a new private Cloud Map namespace named:
+Use the same namespace name as the existing design:
 
 ```text
 group3.internal
 ```
 
-inside the new Terraform-managed VPC:
+Terraform will create it as a new private Cloud Map namespace inside the new Terraform-managed VPC:
 
 ```text
 devops-g3-iac-vpc
 10.30.0.0/16
 ```
+
+This keeps the Terraform environment aligned with the existing service-discovery naming and keeps the application defaults simple.
 
 This is expected to be safe because private DNS namespaces are attached to a VPC. The old console environment uses the default VPC, while Terraform creates a separate VPC.
 
@@ -44,11 +46,11 @@ http://payment:3003
 
 The applications should not need to know task IP addresses, subnet IDs, or AWS resource IDs.
 
-## If AWS rejects duplicate namespace creation
+## Fallback if AWS rejects duplicate namespace creation
 
 If Terraform apply fails because the namespace name already exists or conflicts, the team should not manually edit AWS resources during the apply.
 
-Use one of these safe options:
+Use one of these safe options and document the decision in the Terraform plan review:
 
 1. Import the existing namespace only if it belongs to the same Terraform VPC and is meant to be managed by Terraform.
 2. Use a Terraform-only namespace name such as:
