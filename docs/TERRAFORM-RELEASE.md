@@ -64,6 +64,80 @@ Commit **only** `terraform.tfvars.example` — never commit `terraform.tfvars`.
 
 ---
 
+## 3a. Automated deploy script (preferred)
+
+`scripts/deploy-iac.sh` replaces the manual tfvars editing step. It reads the latest
+Git SHA for each service from SSM Parameter Store (published automatically by each
+service's CodeBuild `post_build` step) and runs the full `plan → apply → smoke test →
+clean plan` cycle.
+
+### SSM parameters (written by CI, read by the script)
+
+| Service | SSM parameter |
+|---------|--------------|
+| order | `/devops-g3-iac/order/image-tag` |
+| inventory | `/devops-g3-iac/inventory/image-tag` |
+| payment | `/devops-g3-iac/payment/image-tag` |
+
+### Credentials setup (required before running the script)
+
+Terraform uses the standard AWS SDK credential chain. The `login_session` plugin in
+`~/.aws/config` is **not** picked up by Terraform — export real credentials first:
+
+```bash
+# Option A — if your CLI version supports it:
+eval $(aws configure export-credentials --format env)
+echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"   # must be non-empty
+
+# Option B — paste the three export lines from your lab portal:
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_SESSION_TOKEN=...
+
+# Verify before running anything:
+aws sts get-caller-identity --region us-west-1   # must return 827478161993
+```
+
+### Usage
+
+```bash
+# deploy all services (reads all SHAs from SSM automatically)
+./scripts/deploy-iac.sh
+
+# override one service's SHA (e.g. after a manual build)
+./scripts/deploy-iac.sh order=abc1234
+
+# override all three
+./scripts/deploy-iac.sh order=abc1234 inventory=def5678 payment=ghi9012
+```
+
+Services whose SSM parameter is not yet set (pipeline hasn't run) keep `REPLACE_ME`
+and Terraform leaves those task definitions unchanged.
+
+The script exits non-zero and aborts before apply if the resolved SHA is not found in
+the corresponding ECR repo, preventing a deploy of a non-existent image.
+
+### Full release flow with the script
+
+```text
+Service owner merges PR to main
+  ↓
+CodePipeline auto-triggers (WebhookV2)
+  ↓
+CodeBuild builds + pushes SHA to devops-g3-iac-<service> ECR
+CodeBuild writes SHA to SSM /devops-g3-iac/<service>/image-tag
+  ↓
+Release owner (or any team member) runs:
+  eval $(aws configure export-credentials --format env)
+  ./scripts/deploy-iac.sh
+  ↓
+Script: reads all SHAs from SSM → verifies ECR → plan → prompt → apply → smoke test → clean plan
+  ↓
+ALB /health and /version show the new SHA
+```
+
+---
+
 ## 4. Validation rules (in code)
 
 `infra/environments/lab/variables.tf` rejects:
@@ -88,9 +162,11 @@ terraform plan -var='order_image_tag=latest'
 Rollback is redeploying the **previous known-good SHA** — no console changes.
 
 ```bash
-# In terraform.tfvars, set tags back to previous SHAs
-terraform plan
-terraform apply
+# pass the previous good SHAs explicitly (overrides SSM)
+./scripts/deploy-iac.sh order=<previous-good-sha>
+
+# or all three if needed
+./scripts/deploy-iac.sh order=<sha> inventory=<sha> payment=<sha>
 ```
 
 Evidence: ALB response shows the old SHA again; ECS service events show task definition rollback revision.
