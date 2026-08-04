@@ -12,7 +12,7 @@ version: 0.2
 
 env:
   variables:
-    ECR_REPO: devops-g3-payment
+    ECR_REPO: devops-g3-iac-payment
     CONTAINER_NAME: payment
     SERVICE_DIR: payment
 
@@ -40,6 +40,8 @@ phases:
       - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI" > imagedefinitions.json
       - cat imagedefinitions.json
       - echo Build complete. Pushed $IMAGE_URI
+      - aws ssm put-parameter --region $AWS_REGION --name /devops-g3-iac/payment/image-tag --value "$SHA" --type String --overwrite
+      - echo "SSM updated /devops-g3-iac/payment/image-tag=$SHA"
 
 artifacts:
   files:
