@@ -6,14 +6,26 @@
 # Run together with the input-validation tests:
 #   cd infra/environments/lab && terraform test -test-directory=tests
 
-mock_provider "aws" {}
+mock_provider "aws" {
+  # aws_iam_policy_document is locally computed but still mocked by default
+  # to an empty string, which fails JSON validation on assume_role_policy.
+  # Override both policy documents with minimal valid JSON.
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}"
+    }
+  }
+}
 
 # ---------------------------------------------------------------------------
 # Single apply run — all structural assertions in one block so the mock
 # infrastructure is created once and re-used across checks.
 # ---------------------------------------------------------------------------
 run "structural_architecture_rules" {
-  command = apply
+  # plan only: assertions are on variable-derived values and hardcoded config
+  # literals that are plan-deterministic. apply would fail because mock_provider
+  # generates random IDs that don't pass AWS ARN format validation.
+  command = plan
 
   variables {
     order_image_tag     = "09823d5"
