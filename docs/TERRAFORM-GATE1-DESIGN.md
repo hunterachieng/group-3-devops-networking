@@ -258,7 +258,9 @@ inventory → payment
 
 Potential risk:
 
-The existing console environment may already use `group3.internal`. The Terraform environment will create its own private namespace in the new VPC and reference it by ARN. If AWS rejects duplicate namespace creation, the team will document the issue and agree on a safe deviation.
+The existing console environment may already use `group3.internal`. The Terraform environment will intentionally keep the same namespace name in the new VPC so the service-discovery model stays consistent. If AWS rejects duplicate namespace creation, the documented fallback is to use a Terraform-specific namespace such as `iac.group3.internal` and review that change before applying.
+
+Namespace coexistence details are documented in `docs/TERRAFORM-SERVICE-CONNECT-NAMESPACE.md`.
 
 Namespace coexistence details are documented in `docs/TERRAFORM-SERVICE-CONNECT-NAMESPACE.md`.
 
