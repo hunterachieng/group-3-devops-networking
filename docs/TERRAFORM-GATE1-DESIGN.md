@@ -170,6 +170,7 @@ Private ECS tasks need outbound access to AWS services for:
 - downloading ECR image layers from S3;
 - sending logs to CloudWatch Logs;
 - using AWS identity/token calls through STS.
+- opening ECS Exec sessions through SSM Messages.
 
 Required endpoints:
 
@@ -179,6 +180,7 @@ Required endpoints:
 | ECR Docker | Interface | Docker image manifest pulls |
 | CloudWatch Logs | Interface | Container log delivery |
 | STS | Interface | Temporary AWS role credentials |
+| SSM Messages | Interface | ECS Exec control/data channels for private tasks |
 | S3 | Gateway | ECR image layer downloads |
 
 Important note:
@@ -258,6 +260,8 @@ Potential risk:
 
 The existing console environment may already use `group3.internal`. The Terraform environment will create its own private namespace in the new VPC and reference it by ARN. If AWS rejects duplicate namespace creation, the team will document the issue and agree on a safe deviation.
 
+Namespace coexistence details are documented in `docs/TERRAFORM-SERVICE-CONNECT-NAMESPACE.md`.
+
 ## 12. Security Group Traffic Contract
 
 Security group rules must reference other security groups, not task IP addresses.
@@ -280,6 +284,20 @@ Denied traffic:
 | Internet | Payment directly | Deny |
 | Order | Payment directly | Deny |
 
+When wiring service modules, pass ingress rules as a map with stable caller-chosen keys:
+
+```hcl
+ingress_rules = {
+  from-alb = {
+    description              = "ALB to order"
+    from_port                = 3001
+    to_port                  = 3001
+    protocol                 = "tcp"
+    source_security_group_id = module.alb.alb_security_group_id
+  }
+}
+```
+
 Callback decision:
 
 If the application keeps the existing Payment → Order `/confirm` callback, it must be documented and explicitly allowed:
@@ -287,6 +305,19 @@ If the application keeps the existing Payment → Order `/confirm` callback, it 
 | Source | Destination | Port | Result |
 |---|---|---:|---|
 | Payment SG | Order SG | 3001 | Allow for callback only |
+
+Because the callback closes the dependency chain (`order → inventory → payment → order`), do not put this callback rule inside the reusable `ecs-service` module input. Add it as a standalone root-level rule after all service modules exist:
+
+```hcl
+resource "aws_vpc_security_group_ingress_rule" "payment_to_order_confirm" {
+  security_group_id            = module.order.security_group_id
+  referenced_security_group_id = module.payment.security_group_id
+  from_port                    = 3001
+  to_port                      = 3001
+  ip_protocol                  = "tcp"
+  description                  = "Payment confirm callback to order"
+}
+```
 
 If the team chooses a strict A → B → C flow, the callback path should be removed or disabled for this Terraform build.
 
@@ -495,17 +526,17 @@ Gate 1 design items below should be peer-reviewed before the first **workload** 
 | Bootstrap S3 bucket | Done |
 | Lab remote backend + init | Done |
 | Release model + SHA validation | Done — see `docs/TERRAFORM-RELEASE.md` |
-| Network / ALB / ECS modules | Pending — Lwam |
+| Network / ALB / ECS modules | Done — reusable module foundations added |
 | Lab `main.tf` wiring | Pending — after modules |
 
 After review, implementation should continue in this order:
 
 ```text
 1. bootstrap stack                    ✅
-2. network module
-3. ALB module
-4. ECS platform module
-5. reusable ECS service module
+2. network module                     ✅
+3. ALB module                         ✅
+4. ECS platform module                ✅
+5. reusable ECS service module        ✅
 6. lab environment wiring
 7. architecture tests
 8. runtime evidence
