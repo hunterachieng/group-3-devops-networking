@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "devops-g3-inventory-pipeline",
+    "name": "devops-g3-order-pipeline",
     "pipelineType": "V2",
     "roleArn": "arn:aws:iam::240462142849:role/devops-g3-codepipeline-role",
     "artifactStore": {
@@ -14,12 +14,7 @@
           "sourceActionName": "Source",
           "push": [
             {
-              "branches": {
-                "includes": ["main"]
-              },
-              "filePaths": {
-                "includes": ["inventory/**", "buildspecs/inventory.yml"]
-              }
+              "branches": { "includes": ["main"] }
             }
           ]
         }
@@ -61,7 +56,7 @@
               "version": "1"
             },
             "configuration": {
-              "ProjectName": "devops-g3-inventory-build"
+              "ProjectName": "devops-g3-order-build"
             },
             "inputArtifacts": [{ "name": "SourceArtifact" }],
             "outputArtifacts": [{ "name": "BuildArtifact" }],
@@ -70,5 +65,11 @@
         ]
       }
     ]
-  }
+  },
+  "tags": [
+    { "key": "Project", "value": "devops-Ecommerce" },
+    { "key": "Group", "value": "group-3" },
+    { "key": "Owner", "value": "order-owner" },
+    { "key": "Environment", "value": "lab" }
+  ]
 }

@@ -1,5 +1,5 @@
 locals {
-  state_bucket_name = "devops-g3-tfstate-827478161993-uswest1"
+  state_bucket_name = "devops-g3-tfstate-240462142849-uswest1"
 
   common_tags = {
     project     = "devops-g3"
