@@ -4,12 +4,12 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
-  "executionRoleArn": "arn:aws:iam::827478161993:role/devops-g3-execution-role",
-  "taskRoleArn": "arn:aws:iam::827478161993:role/devops-g3-task-role",
+  "executionRoleArn": "arn:aws:iam::240462142849:role/devops-g3-execution-role",
+  "taskRoleArn": "arn:aws:iam::240462142849:role/devops-g3-task-role",
   "containerDefinitions": [
     {
       "name": "order",
-      "image": "827478161993.dkr.ecr.us-west-1.amazonaws.com/devops-g3-order:REPLACE_WITH_SHA",
+      "image": "240462142849.dkr.ecr.us-west-1.amazonaws.com/devops-g3-order:REPLACE_WITH_SHA",
       "essential": true,
       "portMappings": [
         {

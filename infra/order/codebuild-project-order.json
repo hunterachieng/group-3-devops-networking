@@ -1,9 +1,9 @@
 {
-  "name": "devops-g3-inventory-build",
-  "description": "Phase 5 build for inventory: docker build + push to ECR, emit imagedefinitions.json. Source is fed by CodePipeline, so the project needs no CodeConnections access of its own.",
+  "name": "devops-g3-order-build",
+  "description": "Build, tag, and push the order service image; emit imagedefinitions.json",
   "source": {
     "type": "CODEPIPELINE",
-    "buildspec": "buildspecs/inventory.yml"
+    "buildspec": "buildspecs/order.yml"
   },
   "artifacts": {
     "type": "CODEPIPELINE"
@@ -23,7 +23,7 @@
   "tags": [
     { "key": "Project", "value": "devops-Ecommerce" },
     { "key": "Group", "value": "group-3" },
-    { "key": "Owner", "value": "inventory-owner" },
+    { "key": "Owner", "value": "order-owner" },
     { "key": "Environment", "value": "lab" }
   ]
 }

@@ -27,7 +27,7 @@
 #   export AWS_SESSION_TOKEN=...
 #
 # Then verify before running:
-#   aws sts get-caller-identity --region us-west-1   # must return 827478161993
+#   aws sts get-caller-identity --region us-west-1   # must return your current account ID
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -euo pipefail

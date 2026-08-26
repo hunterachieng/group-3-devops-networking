@@ -14,7 +14,7 @@
       "computeType": "BUILD_GENERAL1_SMALL",
       "privilegedMode": true
     },
-    "serviceRole": "arn:aws:iam::827478161993:role/devops-g3-codebuild-role",
+    "serviceRole": "arn:aws:iam::240462142849:role/devops-g3-codebuild-role",
     "tags": [
       { "key": "Project", "value": "devops-Ecommerce" },
       { "key": "Group", "value": "group-3" },
