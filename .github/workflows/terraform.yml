@@ -43,3 +43,60 @@ jobs:
       - name: test
         working-directory: infra/environments/lab
         run: terraform test -test-directory=tests
+
+  # Real deploy against the AWS account. Only runs on main, after validate passes,
+  # authenticating via GitHub's OIDC token — no long-lived AWS credentials stored
+  # in this repo. The IAM role trust policy restricts assumption to this repo's
+  # main branch only (see infra/bootstrap for how the role/OIDC provider were set up).
+  deploy:
+    name: terraform apply (lab)
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::240462142849:role/devops-g3-gha-deploy-role
+          aws-region: us-west-1
+
+      - name: init
+        working-directory: infra/environments/lab
+        run: terraform init -input=false
+
+      # Each service's SHA is published to SSM by its CodePipeline build. Reading
+      # it here (instead of relying on defaults) means an infra-only merge never
+      # accidentally rolls a running service back to REPLACE_ME.
+      - name: resolve deployed image tags from SSM
+        working-directory: infra/environments/lab
+        run: |
+          for svc in order inventory payment; do
+            sha=$(aws ssm get-parameter --region us-west-1 \
+              --name "/devops-g3-iac/$svc/image-tag" \
+              --query 'Parameter.Value' --output text 2>/dev/null || echo "REPLACE_ME")
+            echo "${svc}_image_tag=${sha}" >> "$GITHUB_ENV"
+            echo "[$svc] using image tag: $sha"
+          done
+
+      - name: plan
+        working-directory: infra/environments/lab
+        run: |
+          terraform plan -input=false \
+            -var="order_image_tag=${order_image_tag}" \
+            -var="inventory_image_tag=${inventory_image_tag}" \
+            -var="payment_image_tag=${payment_image_tag}" \
+            -out=tfplan
+
+      - name: apply
+        working-directory: infra/environments/lab
+        run: terraform apply -input=false -auto-approve tfplan
