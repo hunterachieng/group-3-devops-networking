@@ -83,8 +83,13 @@ resource "aws_iam_role" "gha_deploy" {
 
 data "aws_iam_policy_document" "gha_deploy_permissions" {
   statement {
-    sid       = "StateBucket"
-    actions   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"]
+    sid = "StateBucket"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject", # required to release the native S3 lock file (.tflock) after plan/apply
+      "s3:ListBucket",
+    ]
     resources = [aws_s3_bucket.tfstate.arn, "${aws_s3_bucket.tfstate.arn}/*"]
   }
 
@@ -106,10 +111,31 @@ data "aws_iam_policy_document" "gha_deploy_permissions" {
     resources = ["*"]
   }
 
+  # logs:DescribeLogGroups is a list-type call that AWS only supports at
+  # Resource "*" — it cannot be scoped to a specific log group ARN. Terraform
+  # calls it on every refresh, so this has to be its own unscoped statement.
   statement {
-    sid       = "LogGroups"
-    actions   = ["logs:*"]
-    resources = ["arn:aws:logs:us-west-1:*:log-group:/ecs/devops-g3-iac*"]
+    sid       = "LogGroupsList"
+    actions   = ["logs:DescribeLogGroups", "logs:ListTagsForResource", "logs:ListTagsLogGroup"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "LogGroupsManage"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:DeleteLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DescribeLogStreams",
+      "logs:TagResource",
+      "logs:UntagResource",
+      "logs:TagLogGroup",
+      "logs:UntagLogGroup",
+    ]
+    resources = [
+      "arn:aws:logs:us-west-1:*:log-group:/ecs/devops-g3-iac*",
+      "arn:aws:logs:us-west-1:*:log-group:/ecs/devops-g3-iac*:*",
+    ]
   }
 
   statement {
