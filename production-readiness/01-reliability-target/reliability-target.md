@@ -1,4 +1,4 @@
-# Reliability Target — Customer Checkout
+# Reliability Target - Customer Checkout
 
 **Critical user journey:** A customer completes a purchase via `POST /checkout` through the public ALB, which triggers Order → Inventory → Payment and the Payment → Order `/confirm` callback.
 
@@ -39,7 +39,7 @@ Terraform creates log metric filters on `/ecs/devops-g3-iac/order`:
 | `CheckoutSuccess` | `"event": "checkout_completed"` | Checkout returned HTTP 200 |
 | `CheckoutFailure` | `"event": "downstream_error"` | Checkout returned HTTP 502 (inventory/payment unreachable) |
 
-**CloudWatch dashboard query:** see widget "Checkout availability SLI" — metric math:
+**CloudWatch dashboard query:** see widget "Checkout availability SLI" - metric math:
 
 ```
 IF(m1+m2 > 0, 100 * m1 / (m1+m2), 100)
@@ -129,4 +129,4 @@ Save screenshots under `production-readiness/01-reliability-target/screenshots/`
 
 - ALB metrics aggregate **all** order target group traffic, not only `POST /checkout` (no path-based routing on ALB).
 - Log-derived availability only covers failures logged as `downstream_error` on order; payment confirm is best-effort and not counted separately.
-- Lab traffic volume is low — SLI graphs may look sparse until load is generated (`scripts/load-test.js` or `scripts/checkout-probe.sh`).
+- Lab traffic volume is low - SLI graphs may look sparse until load is generated (`scripts/load-test.js` or `scripts/checkout-probe.sh`).

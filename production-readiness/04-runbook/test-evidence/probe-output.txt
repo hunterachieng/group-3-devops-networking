@@ -1,0 +1,39 @@
+# Probe output during inventory outage drill (2026-08-28 UTC)
+# Command: ./scripts/checkout-probe.sh --interval 10
+# ALB: devops-g3-iac-alb-1541676775.us-west-1.elb.amazonaws.com
+
+2026-08-28T11:43:18Z  http=502  outcome=failure
+2026-08-28T11:43:28Z  http=502  outcome=failure
+2026-08-28T11:43:38Z  http=502  outcome=failure
+2026-08-28T11:43:48Z  http=502  outcome=failure
+2026-08-28T11:43:58Z  http=502  outcome=failure
+2026-08-28T11:44:08Z  http=502  outcome=failure
+2026-08-28T11:44:18Z  http=502  outcome=failure
+2026-08-28T11:44:28Z  http=502  outcome=failure
+2026-08-28T11:44:38Z  http=502  outcome=failure
+2026-08-28T11:44:48Z  http=502  outcome=failure
+2026-08-28T11:44:58Z  http=502  outcome=failure
+2026-08-28T11:45:08Z  http=502  outcome=failure
+2026-08-28T11:45:18Z  http=502  outcome=failure
+2026-08-28T11:45:28Z  http=502  outcome=failure
+2026-08-28T11:45:38Z  http=502  outcome=failure
+2026-08-28T11:45:48Z  http=502  outcome=failure
+2026-08-28T11:45:58Z  http=502  outcome=failure
+2026-08-28T11:46:08Z  http=502  outcome=failure
+2026-08-28T11:46:18Z  http=502  outcome=failure
+2026-08-28T11:46:28Z  http=502  outcome=failure
+
+# CloudWatch alarm devops-g3-iac-pr-checkout-availability-degraded entered ALARM at 11:46:15 UTC
+# (see alarm-history.txt)
+
+2026-08-28T11:49:00Z  http=502  outcome=failure
+2026-08-28T11:50:00Z  http=502  outcome=failure
+2026-08-28T11:52:00Z  http=502  outcome=failure
+2026-08-28T11:55:00Z  http=502  outcome=failure
+
+# Recovery: aws ecs update-service ... devops-g3-iac-inventory --desired-count 1
+
+2026-08-28T12:00:30Z  http=200  outcome=success
+2026-08-28T12:01:00Z  http=200  outcome=success
+
+# Post-recovery validation order_id from drill: ORD-E8DEB388
