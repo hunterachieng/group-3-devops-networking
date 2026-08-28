@@ -128,6 +128,7 @@ data "aws_iam_policy_document" "gha_deploy_permissions" {
       "logs:PutRetentionPolicy",
       "logs:PutMetricFilter",
       "logs:DeleteMetricFilter",
+      "logs:DescribeMetricFilters",
       "logs:DescribeLogStreams",
       "logs:TagResource",
       "logs:UntagResource",
