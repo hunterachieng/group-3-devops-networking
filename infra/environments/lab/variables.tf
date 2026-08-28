@@ -98,3 +98,34 @@ variable "payment_image_tag" {
     error_message = "payment_image_tag must be a Git SHA (7-40 hex characters) or REPLACE_ME until the first ECR push."
   }
 }
+
+variable "alert_email" {
+  description = "Optional email for CloudWatch alarm notifications via SNS. Confirm the subscription after terraform apply."
+  type        = string
+  default     = ""
+}
+
+variable "slack_team_id" {
+  description = "Slack workspace ID for AWS Chatbot (T...). Requires one-time Slack authorization in AWS Chatbot console."
+  type        = string
+  default     = ""
+}
+
+variable "slack_channel_id" {
+  description = "Slack channel ID for AWS Chatbot (C...). Optional if using SLACK_WEBHOOK_URL instead."
+  type        = string
+  default     = ""
+}
+
+variable "slack_webhook_url" {
+  description = "Slack Incoming Webhook URL for Lambda alert delivery (set via TF_VAR_slack_webhook_url in CI)."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "slack_channel_name" {
+  description = "Slack channel for webhook posts."
+  type        = string
+  default     = "#group-3-alerts"
+}

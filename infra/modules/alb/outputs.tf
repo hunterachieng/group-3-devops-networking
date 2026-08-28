@@ -28,3 +28,13 @@ output "order_target_group_target_type" {
   description = "Target group registration type (must be ip for Fargate awsvpc networking)."
   value       = aws_lb_target_group.order.target_type
 }
+
+output "load_balancer_arn_suffix" {
+  description = "Load balancer dimension suffix for CloudWatch metrics (app/name/id)."
+  value       = aws_lb.this.arn_suffix
+}
+
+output "order_target_group_arn_suffix" {
+  description = "Order target group dimension suffix for CloudWatch metrics (targetgroup/name/id)."
+  value       = aws_lb_target_group.order.arn_suffix
+}
