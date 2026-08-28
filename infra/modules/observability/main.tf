@@ -4,7 +4,7 @@ locals {
     Module    = "observability"
   })
 
-  chatbot_enabled = var.slack_team_id != "" && var.slack_channel_id != ""
+  chatbot_enabled = var.slack_team_id != "" && var.slack_channel_id != "" && var.slack_webhook_url == ""
 
   slack_lambda_enabled = var.slack_webhook_url != ""
 
