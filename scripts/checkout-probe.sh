@@ -55,7 +55,13 @@ if [[ -z "$ALB_DNS" ]]; then
 fi
 
 if [[ -z "$ALB_DNS" ]]; then
-  echo "ALB DNS not set. Pass --alb or run from repo with terraform state." >&2
+  AWS_REGION="${AWS_REGION:-us-west-1}"
+  ALB_DNS="$(aws elbv2 describe-load-balancers --names devops-g3-iac-alb \
+    --query 'LoadBalancers[0].DNSName' --output text --region "$AWS_REGION" 2>/dev/null || true)"
+fi
+
+if [[ -z "$ALB_DNS" || "$ALB_DNS" == "None" ]]; then
+  echo "ALB DNS not set. Pass --alb, run 'terraform init' in infra/environments/lab, or ensure AWS CLI can read devops-g3-iac-alb." >&2
   exit 1
 fi
 
