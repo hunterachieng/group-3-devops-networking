@@ -1,0 +1,20 @@
+{
+    "order_id": "ORD-73DCE686",
+    "outcome": "success",
+    "pipeline": {
+        "downstream": {
+            "amount": 3500,
+            "confirm": "sent",
+            "order_id": "ORD-73DCE686",
+            "outcome": "success",
+            "request_id": "6693154d-dd98-4414-a80b-4c5cfecaca90",
+            "service": "payment-service"
+        },
+        "order_id": "ORD-73DCE686",
+        "outcome": "success",
+        "request_id": "6693154d-dd98-4414-a80b-4c5cfecaca90",
+        "service": "inventory-service"
+    },
+    "request_id": "6693154d-dd98-4414-a80b-4c5cfecaca90",
+    "service": "order-service"
+}

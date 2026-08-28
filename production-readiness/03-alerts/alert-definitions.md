@@ -1,8 +1,8 @@
-# Actionable Alerts — Production Readiness
+# Actionable Alerts - Production Readiness
 
 **Infrastructure:** Terraform module `infra/modules/observability/`  
 **SNS topic:** `devops-g3-iac-production-readiness-alerts`  
-**Runbook:** `production-readiness/04-runbook/runbook.md` (teammate-owned — link alarms here after runbook is written)
+**Runbook:** `production-readiness/04-runbook/runbook.md` (teammate-owned - link alarms here after runbook is written)
 
 ---
 
@@ -26,7 +26,7 @@ terraform output production_readiness_sns_topic_arn
 terraform output production_readiness_slack_lambda_enabled
 ```
 
-**Slack (recommended):** Set GitHub variable `SLACK_WEBHOOK_URL` to your Incoming Webhook for `#group-3-alerts`. CI deploys a Lambda that posts alarm notifications — no AWS Chatbot console access required.
+**Slack (recommended):** Set GitHub variable `SLACK_WEBHOOK_URL` to your Incoming Webhook for `#group-3-alerts`. CI deploys a Lambda that posts alarm notifications - no AWS Chatbot console access required.
 
 **Notification path:**
 
@@ -58,10 +58,10 @@ Alerts 1–3 satisfy the challenge requirement (availability, latency, saturatio
 | Field | Detail |
 |---|---|
 | **What is wrong?** | The order target group is returning HTTP 5xx responses to clients via the ALB. |
-| **Why does it matter?** | Customers cannot complete checkout — direct SLO burn on checkout availability. |
+| **Why does it matter?** | Customers cannot complete checkout - direct SLO burn on checkout availability. |
 | **Where to investigate first?** | (1) ALB → Target groups → `devops-g3-iac-order-tg` health, (2) ECS → `devops-g3-iac-order` service events, (3) CloudWatch Logs `/ecs/devops-g3-iac/order` filter `downstream_error`, (4) inventory/payment task status. |
 | **Likely causes** | Inventory or payment down; order crash; bad deployment; downstream timeout. |
-| **Operator action** | Follow runbook § Verify → Diagnose → Mitigate. Do not ignore if only `/health` passes — check `/checkout`. |
+| **Operator action** | Follow runbook § Verify → Diagnose → Mitigate. Do not ignore if only `/health` passes - check `/checkout`. |
 
 **Prove it fires (lab drill):**
 
@@ -87,7 +87,7 @@ aws ecs update-service --cluster devops-g3-iac-cluster \
 | **Likely causes** | CPU saturation; slow inventory/payment; network issues; load test in progress. |
 | **Operator action** | Check saturation alert; scale order tasks or increase CPU if legitimate load; rollback if correlated with deploy. |
 
-**Prove it fires (lab drill):** Run k6 stress scenario or temporarily enable `ENABLE_FAILURE_ENDPOINTS` + `/slow` on order (lab only — never in prod).
+**Prove it fires (lab drill):** Run k6 stress scenario or temporarily enable `ENABLE_FAILURE_ENDPOINTS` + `/slow` on order (lab only - never in prod).
 
 ---
 
@@ -111,7 +111,7 @@ aws ecs update-service --cluster devops-g3-iac-cluster \
 |---|---|
 | **What is wrong?** | One or more order tasks fail ALB health checks. |
 | **Why does it matter?** | Reduced or zero checkout capacity at the edge; may precede 5xx for customers. |
-| **Where to investigate first?** | (1) Target group health tab — note `Target.Timeout` vs `Connection refused`, (2) order ECS tasks, (3) SG rule `alb-sg → order-sg:3001`, (4) order container logs. |
+| **Where to investigate first?** | (1) Target group health tab - note `Target.Timeout` vs `Connection refused`, (2) order ECS tasks, (3) SG rule `alb-sg → order-sg:3001`, (4) order container logs. |
 | **Likely causes** | SG drift (see Phase 4 scar log); task crash; deployment in progress; bind/port misconfiguration. |
 | **Operator action** | If `Target.Timeout`: check security groups. If `Connection refused`: check app/process. |
 
@@ -125,7 +125,7 @@ aws ecs update-service --cluster devops-g3-iac-cluster \
 |---|---|
 | Single ECS task recycle during deploy | ECS circuit breaker handles rollback; self-healing |
 | `/health` flapping for < 2 min during rollout | Expected; ALB grace period absorbs |
-| Zero request volume (no metric data) | `treat_missing_data = notBreaching` — no human action |
+| Zero request volume (no metric data) | `treat_missing_data = notBreaching` - no human action |
 | Inventory `/ready` false while ALB `/health` on order still 200 | Covered by checkout failure logs and 5xx alarm under traffic |
 
 ---

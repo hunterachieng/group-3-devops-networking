@@ -1,17 +1,24 @@
 # Incident timeline evidence
 
-Supporting captures for the inventory-outage drill (2026-08-28). Use with probe log timestamps from the operator terminal.
+**Drill date:** 2026-08-28 (UTC)
 
-| File | Timeline use |
+Each capture exists in **two versions** from the same drill — Hunter's session captures (`*-hunter.png`) and the team's submission captures (`*-team.png`). Both are valid evidence.
+
+| Base name | Hunter capture | Team capture | Use in timeline |
+|---|---|---|---|
+| 5xx spike | `cloudwatch-5xx-spike-during-inventory-outage-hunter.png` | `cloudwatch-5xx-spike-during-inventory-outage-team.png` | T1/T2 — 5xx metric + alarm |
+| Dashboard | `cloudwatch-dashboard-during-recovery-hunter.png` | `cloudwatch-dashboard-during-recovery-team.png` | T1–T6 — SLI drop and recovery |
+| Alarms OK | `cloudwatch-alarms-ok-after-recovery-hunter.png` | `cloudwatch-alarms-ok-after-recovery-team.png` | T6 — alarm cleared |
+| Slack | `slack-alarm-ok-after-recovery-hunter.png` | `slack-alarm-ok-after-recovery-team.png` | T2/T6 — `#group-3-alerts` |
+
+## Key timestamps (UTC)
+
+| Time | Event |
 |---|---|
-| `cloudwatch-5xx-spike-during-inventory-outage.png` | T1/T2 — metric signal and alarm in **In alarm** (~12:00 UTC) |
-| `slack-alarm-ok-after-recovery.png` | T6 — Slack shows alarm **resolved** after recovery (~12:00:15 UTC) |
-| `cloudwatch-alarms-ok-after-recovery.png` | T6 — all alarms back to **OK** |
-| `cloudwatch-dashboard-during-recovery.png` | Full dashboard — 5xx spike, 0% availability, recovery to 100% (~11:40–12:05 UTC) |
+| ~11:43:00 | T0 — inventory scaled to 0 |
+| ~11:43:18 | T1 — first probe 502 |
+| 11:46:15 | T2 — alarm ALARM + Slack |
+| ~11:46–12:00 | T3/T4 — diagnose + scale inventory to 1 |
+| 12:00:15 | T6 — alarm OK + checkout restored |
 
-**Suggested timestamps (UTC, from operator session):**
-
-- T0 ~11:43 — inventory scaled to 0
-- T1 ~11:43:18 — first probe `http=502`
-- T2 ~11:46:16 — Lambda invoked (Slack ALARM; check Slack history if captured separately)
-- T6 ~12:00:15 — Slack `[OK]` + successful checkout validation
+CLI backup: [alarm-history.txt](../../04-runbook/test-evidence/alarm-history.txt)
