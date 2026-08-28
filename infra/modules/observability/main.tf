@@ -4,9 +4,12 @@ locals {
     Module    = "observability"
   })
 
-  chatbot_enabled = var.slack_team_id != "" && var.slack_channel_id != ""
+  # Booleans only — safe to expose; webhook URL itself stays sensitive.
+  slack_webhook_configured = nonsensitive(trimspace(var.slack_webhook_url) != "")
 
-  slack_lambda_enabled = var.slack_webhook_url != ""
+  chatbot_enabled = var.slack_team_id != "" && var.slack_channel_id != "" && !local.slack_webhook_configured
+
+  slack_lambda_enabled = local.slack_webhook_configured
 
   alb_dimensions = {
     LoadBalancer = var.load_balancer_arn_suffix

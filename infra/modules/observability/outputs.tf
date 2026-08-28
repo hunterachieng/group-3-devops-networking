@@ -40,7 +40,7 @@ output "chatbot_configuration_name" {
 
 output "slack_lambda_enabled" {
   description = "Whether SNS alarms are forwarded to Slack via Lambda webhook."
-  value       = nonsensitive(local.slack_lambda_enabled)
+  value       = local.slack_lambda_enabled
 }
 
 output "slack_lambda_function_name" {

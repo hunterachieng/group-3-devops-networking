@@ -85,7 +85,7 @@ jobs:
       - name: check Slack delivery configuration
         run: |
           if [ -n "$TF_VAR_slack_webhook_url" ]; then
-            echo "SLACK_WEBHOOK_URL set — Lambda will post alarms to Slack."
+            echo "SLACK_WEBHOOK_URL set — Lambda will post alarms to Slack (Chatbot skipped)."
           elif [ -n "$TF_VAR_slack_team_id" ] && [ -n "$TF_VAR_slack_channel_id" ]; then
             echo "Slack IDs set — AWS Chatbot will be managed (requires console OAuth)."
           else
