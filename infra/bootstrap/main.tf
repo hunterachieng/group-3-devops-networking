@@ -135,6 +135,8 @@ data "aws_iam_policy_document" "gha_deploy_permissions" {
     resources = [
       "arn:aws:logs:us-west-1:*:log-group:/ecs/devops-g3-iac*",
       "arn:aws:logs:us-west-1:*:log-group:/ecs/devops-g3-iac*:*",
+      "arn:aws:logs:us-west-1:*:log-group:/aws/lambda/devops-g3-iac*",
+      "arn:aws:logs:us-west-1:*:log-group:/aws/lambda/devops-g3-iac*:*",
     ]
   }
 
@@ -157,6 +159,18 @@ data "aws_iam_policy_document" "gha_deploy_permissions" {
       "iam:DetachRolePolicy",
     ]
     resources = ["arn:aws:iam::*:role/devops-g3-iac-*"]
+  }
+
+  # Production-readiness observability (CloudWatch alarms, SNS, AWS Chatbot, Lambda).
+  statement {
+    sid = "Observability"
+    actions = [
+      "cloudwatch:*",
+      "sns:*",
+      "chatbot:*",
+      "lambda:*",
+    ]
+    resources = ["*"]
   }
 }
 

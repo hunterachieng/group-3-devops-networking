@@ -30,3 +30,6 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Lambda build artifacts (observability module)
+infra/modules/observability/build/

@@ -70,3 +70,28 @@ output "s3_gateway_endpoint_id" {
   description = "S3 gateway endpoint used for ECR layer downloads."
   value       = module.network.s3_gateway_endpoint_id
 }
+
+output "production_readiness_dashboard_name" {
+  description = "CloudWatch dashboard for production readiness SLIs."
+  value       = module.observability.dashboard_name
+}
+
+output "production_readiness_alarm_names" {
+  description = "CloudWatch alarm names for production readiness."
+  value       = module.observability.alarm_names
+}
+
+output "production_readiness_sns_topic_arn" {
+  description = "SNS topic ARN for production readiness alarms."
+  value       = module.observability.sns_topic_arn
+}
+
+output "production_readiness_chatbot_enabled" {
+  description = "Whether CloudWatch alarms are wired to Slack via AWS Chatbot."
+  value       = module.observability.chatbot_enabled
+}
+
+output "production_readiness_slack_lambda_enabled" {
+  description = "Whether CloudWatch alarms are forwarded to Slack via Lambda webhook."
+  value       = module.observability.slack_lambda_enabled
+}

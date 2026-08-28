@@ -137,3 +137,22 @@ resource "aws_vpc_security_group_ingress_rule" "payment_to_order_confirm" {
 
   depends_on = [module.order, module.payment]
 }
+
+module "observability" {
+  source = "../../modules/observability"
+
+  name_prefix                   = var.name_prefix
+  common_tags                   = var.common_tags
+  cluster_name                  = module.ecs_platform.cluster_name
+  order_service_name            = module.order.service_name
+  load_balancer_arn_suffix      = module.alb.load_balancer_arn_suffix
+  order_target_group_arn_suffix = module.alb.order_target_group_arn_suffix
+  order_log_group_name          = module.ecs_platform.log_group_names["order"]
+  alert_email                   = var.alert_email
+  slack_team_id                 = var.slack_team_id
+  slack_channel_id              = var.slack_channel_id
+  slack_webhook_url             = var.slack_webhook_url
+  slack_channel_name            = var.slack_channel_name
+
+  depends_on = [module.order]
+}

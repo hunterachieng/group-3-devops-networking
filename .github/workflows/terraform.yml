@@ -10,6 +10,7 @@ on:
       - main
     paths:
       - 'infra/**'
+      - '.github/workflows/terraform.yml'
 
 jobs:
   terraform:
@@ -56,6 +57,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      # Repository variables (Settings → Secrets and variables → Actions).
+      # Terraform auto-maps TF_VAR_* to input variables in infra/environments/lab.
+      TF_VAR_slack_webhook_url: ${{ vars.SLACK_WEBHOOK_URL }}
+      TF_VAR_slack_team_id: ${{ vars.SLACK_TEAM_ID }}
+      TF_VAR_slack_channel_id: ${{ vars.SLACK_CHANNEL_ID }}
+      TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -73,6 +81,16 @@ jobs:
       - name: init
         working-directory: infra/environments/lab
         run: terraform init -input=false
+
+      - name: check Slack delivery configuration
+        run: |
+          if [ -n "$TF_VAR_slack_webhook_url" ]; then
+            echo "SLACK_WEBHOOK_URL set — Lambda will post alarms to Slack."
+          elif [ -n "$TF_VAR_slack_team_id" ] && [ -n "$TF_VAR_slack_channel_id" ]; then
+            echo "Slack IDs set — AWS Chatbot will be managed (requires console OAuth)."
+          else
+            echo "::warning::Set SLACK_WEBHOOK_URL (recommended) or SLACK_TEAM_ID + SLACK_CHANNEL_ID."
+          fi
 
       # Each service's SHA is published to SSM by its CodePipeline build. Reading
       # it here (instead of relying on defaults) means an infra-only merge never
@@ -100,3 +118,14 @@ jobs:
       - name: apply
         working-directory: infra/environments/lab
         run: terraform apply -input=false -auto-approve tfplan
+
+      - name: verify Slack Lambda output
+        if: env.TF_VAR_slack_webhook_url != ''
+        working-directory: infra/environments/lab
+        run: |
+          enabled=$(terraform output -raw production_readiness_slack_lambda_enabled)
+          if [ "$enabled" != "true" ]; then
+            echo "::error::Expected production_readiness_slack_lambda_enabled=true after apply"
+            exit 1
+          fi
+          echo "Slack Lambda notifier enabled — alarms will post via Incoming Webhook"
