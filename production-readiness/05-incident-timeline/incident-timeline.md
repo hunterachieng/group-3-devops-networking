@@ -24,12 +24,12 @@
 |---|---|---|---|
 | **T0** | ~**11:43:00** | Failure injected: `aws ecs update-service … devops-g3-iac-inventory --desired-count 0` | Operator action; ECS desired count 0 |
 | **T1** | ~**11:43:18** | First customer impact: probe records `http=502 outcome=failure` | [probe-output.txt](../04-runbook/test-evidence/probe-output.txt) |
-| **T1b** | **11:42–11:43** | ALB `HTTPCode_Target_5XX_Count` rises (6 then 11 errors/min) | [cloudwatch-5xx-spike-during-inventory-outage.png](evidence/cloudwatch-5xx-spike-during-inventory-outage.png) |
-| **T2** | **11:46:15** | CloudWatch alarm **ALARM**; SNS → Lambda → Slack `#group-3-alerts` | [alarm-history.txt](../04-runbook/test-evidence/alarm-history.txt); [slack-alarm-ok-after-recovery.png](evidence/slack-alarm-ok-after-recovery.png) |
+| **T1b** | **11:42–11:43** | ALB `HTTPCode_Target_5XX_Count` rises (6 then 11 errors/min) | [team](evidence/cloudwatch-5xx-spike-during-inventory-outage-team.png) · [hunter](evidence/cloudwatch-5xx-spike-during-inventory-outage-hunter.png) |
+| **T2** | **11:46:15** | CloudWatch alarm **ALARM**; SNS → Lambda → Slack `#group-3-alerts` | [alarm-history.txt](../04-runbook/test-evidence/alarm-history.txt); [slack team](evidence/slack-alarm-ok-after-recovery-team.png) · [slack hunter](evidence/slack-alarm-ok-after-recovery-hunter.png) |
 | **T3** | ~**11:46–11:55** | Diagnosis: order logs show `downstream_error`; inventory `runningCount=0`; ALB `/health` still passing | [logs-insights-checkout.png](../01-reliability-target/screenshots/logs-insights-checkout.png) |
 | **T4** | ~**11:55–12:00** | Mitigation: scale inventory `--desired-count 1`; wait for task RUNNING | Runbook § Mitigate |
-| **T5** | ~**12:00** | Checkout succeeds again; 5xx rate drops; availability SLI recovers toward 100% | [cloudwatch-dashboard-during-recovery.png](evidence/cloudwatch-dashboard-during-recovery.png) |
-| **T6** | **12:00:15** | Alarm returns **OK**; Slack `[OK]` notification | [alarm-history.txt](../04-runbook/test-evidence/alarm-history.txt); [cloudwatch-alarms-ok-after-recovery.png](evidence/cloudwatch-alarms-ok-after-recovery.png) |
+| **T5** | ~**12:00** | Checkout succeeds again; 5xx rate drops; availability SLI recovers toward 100% | [team](evidence/cloudwatch-dashboard-during-recovery-team.png) · [hunter](evidence/cloudwatch-dashboard-during-recovery-hunter.png) |
+| **T6** | **12:00:15** | Alarm returns **OK**; Slack `[OK]` notification | [alarm-history.txt](../04-runbook/test-evidence/alarm-history.txt); [alarms team](evidence/cloudwatch-alarms-ok-after-recovery-team.png) · [alarms hunter](evidence/cloudwatch-alarms-ok-after-recovery-hunter.png) |
 
 ### TTD / TTR calculation
 
@@ -54,7 +54,9 @@ From dashboard `devops-g3-iac-production-readiness` during the incident window:
 | Target health | **2 healthy** throughout | Unchanged - order tasks healthy |
 | Latency p95 | Brief elevation, below 500 ms SLO | Normal |
 
-![Dashboard during recovery](evidence/cloudwatch-dashboard-during-recovery.png)
+![Dashboard during recovery (team capture)](evidence/cloudwatch-dashboard-during-recovery-team.png)
+
+![Dashboard during recovery (hunter capture)](evidence/cloudwatch-dashboard-during-recovery-hunter.png)
 
 ---
 
@@ -95,10 +97,14 @@ From dashboard `devops-g3-iac-production-readiness` during the incident window:
 
 | File | Description |
 |---|---|
-| [cloudwatch-5xx-spike-during-inventory-outage.png](evidence/cloudwatch-5xx-spike-during-inventory-outage.png) | 5xx metric + alarm graph during outage |
-| [cloudwatch-dashboard-during-recovery.png](evidence/cloudwatch-dashboard-during-recovery.png) | Full SLI dashboard - drop and recovery |
-| [cloudwatch-alarms-ok-after-recovery.png](evidence/cloudwatch-alarms-ok-after-recovery.png) | Alarm detail after recovery |
-| [slack-alarm-ok-after-recovery.png](evidence/slack-alarm-ok-after-recovery.png) | Slack notifications to `#group-3-alerts` |
+| `cloudwatch-5xx-spike-during-inventory-outage-team.png` | Team capture — 5xx metric + alarm graph during outage |
+| `cloudwatch-5xx-spike-during-inventory-outage-hunter.png` | Hunter capture — same window |
+| `cloudwatch-dashboard-during-recovery-team.png` | Team capture — full SLI dashboard |
+| `cloudwatch-dashboard-during-recovery-hunter.png` | Hunter capture — full SLI dashboard |
+| `cloudwatch-alarms-ok-after-recovery-team.png` | Team capture — alarm detail after recovery |
+| `cloudwatch-alarms-ok-after-recovery-hunter.png` | Hunter capture — alarm detail after recovery |
+| `slack-alarm-ok-after-recovery-team.png` | Team capture — Slack `#group-3-alerts` |
+| `slack-alarm-ok-after-recovery-hunter.png` | Hunter capture — Slack `#group-3-alerts` |
 | [alarm-history.txt](../04-runbook/test-evidence/alarm-history.txt) | CLI alarm state transitions with timestamps |
 | [probe-output.txt](../04-runbook/test-evidence/probe-output.txt) | Probe 502 lines during failure |
 | [checkout-success.json](../04-runbook/test-evidence/checkout-success.json) | Post-recovery checkout validation |
